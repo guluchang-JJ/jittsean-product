@@ -279,6 +279,37 @@
     }
 
     /* ============================================================
+       SECTION HEADERS
+       ============================================================ */
+    .section-header {
+      display: flex; align-items: center; gap: 10px;
+      padding: 20px 0 14px;
+      opacity: 0;
+    }
+    .section-header-line {
+      flex: 1; height: 1px;
+      background: rgba(28,58,19,.18);
+    }
+    .section-header-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .15em;
+      text-transform: uppercase; white-space: nowrap;
+      color: var(--text-muted);
+    }
+    .section-header.treatment .section-header-label { color: var(--forest-mid); }
+    .section-header.treatment .section-header-line { background: rgba(28,58,19,.28); }
+
+    /* Treatment card variant */
+    .product-card.treatment {
+      background: #EDF5EA;
+      border-color: rgba(28,58,19,.2);
+      box-shadow:
+        0 5px 0 rgba(28,58,19,.13),
+        0 10px 28px rgba(28,58,19,.07),
+        inset 0 1.5px 3px rgba(255,255,255,.6),
+        inset 0 -1px 3px rgba(28,58,19,.04);
+    }
+
+    /* ============================================================
        REDUCED MOTION
        ============================================================ */
     @media (prefers-reduced-motion: reduce) {
@@ -308,8 +339,12 @@
       <div class="header-divider" aria-hidden="true"></div>
     </header>
 
-    <!-- Product list -->
-    <p class="section-label">目前開放的測驗</p>
+    <!-- Section 1: 居家保健 -->
+    <div class="section-header">
+      <div class="section-header-line"></div>
+      <span class="section-header-label">居家保健</span>
+      <div class="section-header-line"></div>
+    </div>
 
     <!-- Product 1: 優go鼎 -->
     <a href="./yu-go-ding/index.html" class="product-card" aria-label="優go鼎男性活力測驗，開始測驗">
@@ -389,8 +424,15 @@
       </div>
     </a>
 
+    <!-- Section 2: 診間療程 -->
+    <div class="section-header treatment">
+      <div class="section-header-line"></div>
+      <span class="section-header-label">診間療程</span>
+      <div class="section-header-line"></div>
+    </div>
+
     <!-- Product 3: 美顏針 -->
-    <a href="./facial-acupuncture/index.html" class="product-card" aria-label="美顏針自我評估，開始測驗">
+    <a href="./facial-acupuncture/index.html" class="product-card treatment" aria-label="美顏針自我評估，開始測驗">
       <div class="card-head">
         <div class="card-body">
           <div class="card-name">美顏針</div>
@@ -465,7 +507,7 @@
       </div>
     </a>
 
-    <a href="./中醫減重/index.html" class="product-card" aria-label="中醫減重門診評估，開始測驗">
+    <a href="./中醫減重/index.html" class="product-card treatment" aria-label="中醫減重門診評估，開始測驗">
       <div class="card-head">
         <div class="card-body">
           <div class="card-name">中醫減重</div>
@@ -502,7 +544,7 @@
       </div>
     </a>
 
-    <a href="./穴位埋線/index.html" class="product-card" aria-label="穴位埋線體質測驗，開始測驗">
+    <a href="./穴位埋線/index.html" class="product-card treatment" aria-label="穴位埋線體質測驗，開始測驗">
       <div class="card-head">
         <div class="card-body">
           <div class="card-name">穴位埋線</div>
@@ -538,7 +580,7 @@
       </div>
     </a>
 
-    <a href="./穴位敷貼/index.html" class="product-card" aria-label="穴位敷貼體質測驗，開始測驗">
+    <a href="./穴位敷貼/index.html" class="product-card treatment" aria-label="穴位敷貼體質測驗，開始測驗">
       <div class="card-head">
         <div class="card-body">
           <div class="card-name">穴位敷貼</div>
@@ -599,7 +641,7 @@
         .to('.header-title',    { opacity: 1, y: 0, duration: .55 }, '-=.30')
         .to('.header-sub',      { opacity: 1, y: 0, duration: .45 }, '-=.25')
         .to('.header-divider',  { opacity: 1, scaleX: 1, duration: .35, transformOrigin: 'center' }, '-=.20')
-        .to('.section-label',   { opacity: 1, duration: .35 }, '-=.10');
+        .to('.section-header',  { opacity: 1, duration: .35 }, '-=.10');
 
       // Set initial state for header elements
       gsap.set(['.header-eyebrow', '.header-title', '.header-sub'], { y: 14 });
@@ -621,7 +663,7 @@
     } else {
       // Show everything immediately
       gsap.set(['.header-eyebrow', '.header-title', '.header-sub', '.header-divider',
-                 '.section-label', '.product-card', '.site-footer'], { opacity: 1, y: 0 });
+                 '.section-header', '.product-card', '.site-footer'], { opacity: 1, y: 0 });
     }
   </script>
 </body>
