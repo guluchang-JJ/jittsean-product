@@ -839,12 +839,12 @@ function buildLow() {
 function buildAsk() {
   const isDigestion = S.askType.includes('digestion');
   const isPregnant  = S.askType.includes('pregnant');
-  let bodyText = '在使用任何中藥材前，和中醫師或藥師確認一下，是對自己最好的照顧。進診間時，不妨帶上這款產品的資訊，讓醫師幫你評估。';
+  let bodyText = '有任何疑問，都可以到櫃檯詢問，同仁會協助你確認適不適合、怎麼搭配比較好。';
   if (isDigestion && !isPregnant) {
-    bodyText = '玫瑰花行氣作用較強，腸胃比較敏感或容易腹瀉的人，建議先從少量開始試試，或進診間和中醫師討論適合你的用量與搭配方式。';
+    bodyText = '玫瑰花行氣作用較強，腸胃比較敏感或容易腹瀉的人，建議先從少量開始試試，或到櫃檯詢問，讓同仁幫你確認適合的用量與搭配方式。';
   }
-  setResultTop('ask', ICON_WARN, '建議先跟中醫師聊聊',
-    '不是不能喝，而是讓醫師幫你確認最適合的方式，喝起來才更安心。');
+  setResultTop('ask', ICON_WARN, '有幾點建議先確認一下',
+    '不是不能喝，而是先到櫃檯問一下，喝起來才更安心。');
   qs('#rIngSection').innerHTML = `<div class="consult-box"><p>${bodyText}</p></div>`;
   qs('#rNote').textContent = '';
   qs('#rDisc').textContent = '';
@@ -898,7 +898,8 @@ function buildResultCTA() {
   if (S.hasAsk) {
     const btn = document.createElement('button');
     btn.className = 'btn-primary';
-    btn.textContent = '與中醫師討論看看';
+    btn.textContent = '向櫃檯詢問，同仁協助安排';
+    btn.addEventListener('click', () => { window.location.href = '../index.html'; });
     ctaWrap.appendChild(btn);
     const ghost = document.createElement('button');
     ghost.className = 'btn-ghost';
@@ -910,7 +911,8 @@ function buildResultCTA() {
 
   const main = document.createElement('button');
   main.className = 'btn-primary';
-  main.textContent = '了解如何取得';
+  main.textContent = '向櫃檯詢問，了解如何取得';
+  main.addEventListener('click', () => { window.location.href = '../index.html'; });
   ctaWrap.appendChild(main);
 
   const ghost = document.createElement('button');

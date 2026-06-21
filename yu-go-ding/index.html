@@ -942,10 +942,10 @@
     },
     ask: {
       cls: 'ask',
-      title: '建議先和醫師確認一下',
-      desc:  '根據你目前的狀況，建議在購買前進診間和醫師聊聊，讓醫師幫你評估是否適合。',
+      title: '有些情況，建議先向同仁詢問',
+      desc:  '根據你目前的狀況，建議先到櫃檯詢問，同仁可以協助你確認是否適合。',
       disc:  '本測驗僅供參考，不構成醫療診斷。',
-      ctaLabel: null,
+      ctaLabel: '向櫃檯詢問，同仁協助確認',
       note:  null,
     },
   };
@@ -962,7 +962,7 @@
     // Extra CTA below ingredient cards (consult box for 'ask')
     const extraCTA = document.getElementById('rExtraCTA');
     if (level === 'ask') {
-      extraCTA.innerHTML = `<div class="consult-box"><p>這不代表你一定不適合，而是讓醫師幫你確認會更安心。<br>可以帶著這個頁面，讓醫師了解你想詢問優go鼎。</p></div>`;
+      extraCTA.innerHTML = `<div class="consult-box"><p>這不代表你一定不適合，而是先和同仁確認會更安心。<br>可以帶著這個頁面到櫃檯，讓同仁了解你想詢問優go鼎。</p></div>`;
     } else {
       extraCTA.innerHTML = '';
     }
