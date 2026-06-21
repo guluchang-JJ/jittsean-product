@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>穴位敷貼自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  --orange:#FF8811;
+  --orange-pale:#FFF0DD;
+  --orange-rgb:255,136,17;
+  --yellow:#F4D06F;
+  --yellow-pale:#FFFBEF;
+  --aqua:#9DD9D2;
+  --aqua-pale:#E6F7F6;
+  --cream:#FFF8F0;
+  --indigo:#392F5A;
+  --indigo-mid:rgba(57,47,90,.65);
+  --bg:#FFFDF7;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--indigo);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── Screens ── */
+.screen{
+  display:none;
+  min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+#s0.active{display:flex;flex-direction:column}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress bar ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(255,136,17,.18);
+}
+.progress-bar{
+  height:100%;background:var(--orange);
+  transition:width .4s ease;border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--indigo);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 rgba(57,47,90,.35),0 10px 20px rgba(57,47,90,.18);
+  transition:transform .12s ease,box-shadow .12s ease;touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(57,47,90,.35),0 5px 12px rgba(57,47,90,.15)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--indigo);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(57,47,90,.25);border-radius:20px;
+  cursor:pointer;text-align:center;transition:background .15s;touch-action:manipulation;
+}
+.btn-ghost:active{background:rgba(57,47,90,.06)}
+
+/* ── Screen 0: Welcome ── */
+.hero-img{
+  width:100%;height:260px;object-fit:cover;object-position:center;
+  border-radius:0 0 32px 32px;
+  background:linear-gradient(135deg,var(--yellow-pale),var(--aqua-pale));
+}
+.hero-img-fallback{
+  width:100%;height:260px;border-radius:0 0 32px 32px;
+  background:linear-gradient(135deg,#FFF9E6 0%,#F4D06F 50%,#9DD9D2 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-img-fallback svg{opacity:.3}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;background:var(--aqua);color:var(--indigo);
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--indigo);margin-bottom:12px;
+}
+.hero-sub{font-size:15px;line-height:1.9;color:var(--indigo-mid);margin-bottom:24px}
+.hero-card{
+  background:var(--cream);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(0,0,0,.07),0 10px 24px rgba(0,0,0,.05);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--indigo-mid)}
+.hero-card strong{color:var(--orange);font-weight:600}
+
+/* ── Screen 1: Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;
+  color:var(--orange);text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--indigo-mid);margin-bottom:28px}
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:flex-start;gap:14px;
+  background:var(--cream);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(0,0,0,.07),0 8px 16px rgba(0,0,0,.05);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  border:2px solid transparent;touch-action:manipulation;
+}
+.check-card.selected{
+  border-color:var(--orange);
+  box-shadow:0 4px 0 rgba(var(--orange-rgb),.25),0 8px 16px rgba(var(--orange-rgb),.12);
+}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;min-width:22px;border-radius:6px;
+  border:2px solid rgba(255,136,17,.35);
+  transition:background .15s,border-color .15s;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.check-card.selected .check-box{background:var(--orange);border-color:var(--orange)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.65;color:var(--indigo)}
+
+/* ── Quiz questions ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--orange);margin-bottom:6px}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--indigo-mid);margin-bottom:28px}
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;
+  background:var(--cream);border:2px solid transparent;
+  border-radius:20px;padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--indigo);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(0,0,0,.07),0 8px 16px rgba(0,0,0,.05);
+  transition:border-color .12s,box-shadow .12s,transform .1s;
+  touch-action:manipulation;display:flex;align-items:center;gap:12px;width:100%;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-inner{display:flex;align-items:center;gap:11px}
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(57,47,90,.22);transition:background .12s;
+}
+.option-btn.selected .opt-dot{background:var(--orange)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;background:var(--orange);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(var(--orange-rgb),.22);
+}
+.option-btn.selected{border-color:var(--orange)}
+
+/* ── Result screen ── */
+#s5{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--cream);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(0,0,0,.07),0 8px 16px rgba(0,0,0,.05);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--indigo)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--indigo-mid);margin-bottom:28px}
+.aspect-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.aspect-card{
+  background:var(--cream);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.08),0 10px 20px rgba(0,0,0,.06);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.aspect-icon{
+  width:44px;height:44px;min-width:44px;border-radius:14px;
+  background:var(--orange-pale);
+  display:flex;align-items:center;justify-content:center;
+}
+.aspect-icon.aqua{background:var(--aqua-pale)}
+.aspect-icon.yellow{background:var(--yellow-pale)}
+.aspect-name{font-size:13px;font-weight:600;color:var(--orange);margin-bottom:4px;letter-spacing:.01em}
+.aspect-headline{font-size:16px;font-weight:700;color:var(--indigo);margin-bottom:6px;line-height:1.4}
+.aspect-desc{font-size:13px;line-height:1.8;color:var(--indigo-mid)}
+.ref-note{
+  background:var(--aqua-pale);border-radius:16px;padding:14px 16px;
+  font-size:12px;line-height:1.7;color:var(--indigo);opacity:.65;margin-bottom:24px;
+}
+.consult-box{
+  background:var(--cream);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.08),0 10px 20px rgba(0,0,0,.06);
+  font-size:15px;line-height:1.9;color:var(--indigo-mid);margin-bottom:24px;
+}
+.low-desc{font-size:15px;line-height:1.9;color:var(--indigo-mid);margin-bottom:24px}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- Screen 0: Welcome -->
+<div class="screen active" id="s0">
+  <div style="position:relative">
+    <img src="./hero.webp" alt="穴位敷貼示意"
+      class="hero-img"
+      onerror="this.style.display='none';document.getElementById('heroFallback').style.display='flex'">
+    <div id="heroFallback" style="display:none" class="hero-img-fallback">
+      <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#FF8811" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 6v6l4 2"/>
+      </svg>
+    </div>
+  </div>
+  <div class="hero-content">
+    <span class="tag-pill">ACUPOINT THERAPY</span>
+    <h1 class="hero-title">身體偏寒，<br>有一種方式從根慢慢暖</h1>
+    <p class="hero-sub">4 個問題，幫你確認穴位敷貼是否適合你的體質方向。大約 1 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>穴位敷貼（天灸）將<strong>辛溫中藥</strong>貼於特定穴位，透過藥性與穴位刺激溫通經絡。適合有<strong>虛寒體質</strong>的族群——包括手腳冰冷、鼻過敏、痛經、夜尿頻尿、元氣不足等常見問題。需由醫師評估體質後安排。</p>
+  </div>
+</div>
+
+<!-- Screen 1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">穴位敷貼藥性偏辛溫，以下體質需先讓同仁確認是否適合。勾選符合的，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="heat">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">容易口乾、手腳心發熱、失眠多夢，或常有燥熱感（陰虛火旺體質）</span>
+    </label>
+    <label class="check-card" data-val="dampHeat">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">口苦、下腹有灼熱感，或白帶偏黃有異味（濕熱體質）</span>
+    </label>
+    <label class="check-card" data-val="skin">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">皮膚容易嚴重過敏，或有蟹足腫（疤痕增生）體質</span>
+    </label>
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">目前懷孕或疑似懷孕</span>
+    </label>
+  </div>
+</div>
+
+<!-- Screens 2–4: Questions (built by JS) -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+
+<!-- Screen 5: Result -->
+<div class="screen" id="s5"></div>
+
+<!-- Sticky CTA -->
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 6;
+const RESULT_SCREEN = 5;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '你有沒有這樣的感覺？',
+    hint: '選最符合目前狀況的一項就好',
+    options: [
+      { val:'cold',     pts:2, label:'怕冷、手腳冰冷，小腹或腰背常感覺涼涼的' },
+      { val:'fatigue',  pts:2, label:'容易疲倦，氣色偏白，精神比以前差' },
+      { val:'specific', pts:1, label:'以上感覺還好，主要是特定症狀想調整' },
+    ]
+  },
+  {
+    q: '你最想改善的是哪個方向？',
+    hint: '選一個最在意的就好，不需要全部符合',
+    options: [
+      { val:'period',   pts:2, label:'月經不規律、痛經，或正在準備備孕' },
+      { val:'allergy',  pts:2, label:'鼻過敏——冬天容易鼻塞、流清涕' },
+      { val:'urinary',  pts:2, label:'夜尿多、頻尿，或常感覺泌尿道偏弱' },
+      { val:'vitality', pts:2, label:'整體元氣調整，含容易疲倦或性功能方面' },
+    ]
+  },
+  {
+    q: '哪個描述比較像你？',
+    hint: '這個問題幫助確認體質方向',
+    options: [
+      { val:'heat_better',  pts:2, label:'症狀熱敷後會比較舒服，也比較喜歡喝熱飲' },
+      { val:'weak_immune',  pts:1, label:'怕風、容易感冒，感冒後恢復比較慢' },
+      { val:'low_energy',   pts:1, label:'手腳不算特別冷，但體力精神一直偏低' },
+    ]
+  }
+];
+
+const ASPECT_BY_VAL = {
+  cold: {
+    icon:'',
+    name:'陽虛寒底體質',
+    headline:'辛溫藥性從穴位透入，溫通全身循環',
+    desc:'怕冷、手腳冰冷、腰腹冷感，是穴位敷貼最對路的虛寒方向。辛溫藥性透過穴位刺激經絡，協助身體從寒底逐漸溫通，不只是表面保暖。'
+  },
+  fatigue: {
+    icon:'yellow',
+    name:'氣虛陽虛調理',
+    headline:'疲倦不只是睡不夠，可能是陽氣需要補充',
+    desc:'長期疲倦、氣色偏白，中醫常從脾腎陽氣不足的方向評估。敷貼從體質根源切入，協助陽氣逐漸恢復，而不只是補充表面能量。'
+  },
+  specific: {
+    icon:'aqua',
+    name:'體質整理方向',
+    headline:'先由醫師評估，確認最合適的穴位方向',
+    desc:'即使沒有明顯的急性症狀，若體質有偏寒的傾向，定期敷貼也可以是體質預防保養的選項。醫師會依你的實際狀況建議最合適的安排。'
+  },
+  period: {
+    icon:'',
+    name:'暖宮經期調理',
+    headline:'月經的狀態，常是子宮寒熱的反應',
+    desc:'痛經熱敷後舒緩、經血色暗或月經延後，是寒凝宮寒的常見表現。醫師依體質選取關元、三陰交、子宮穴等方向，從暖宮溫通的角度協助調整。'
+  },
+  allergy: {
+    icon:'aqua',
+    name:'鼻過敏體質調理',
+    headline:'鼻過敏常與陽虛、衛氣不固有關',
+    desc:'中醫認為過敏性鼻炎常見於衛陽不足體質。「冬病夏治」的穴位敷貼正是以補陽固表的思路，在陽氣充沛的三伏天調整體質根源，減少秋冬過敏發作的頻率。'
+  },
+  urinary: {
+    icon:'yellow',
+    name:'腎陽虛頻尿夜尿',
+    headline:'夜尿多、頻尿，可能與腎陽不足有關',
+    desc:'頻尿、夜尿在中醫常與腎陽虛、膀胱氣化功能偏弱有關。敷貼可從溫補腎陽的角度，協助膀胱恢復正常的氣化節奏，減少夜間頻繁起床的困擾。'
+  },
+  vitality: {
+    icon:'',
+    name:'元陽調理',
+    headline:'陽氣是身體活力的根本',
+    desc:'陽氣不足的疲倦、性功能下降，中醫常從命門火衰、腎陽不足的方向評估。敷貼可作為整體元陽調補的輔助，協助身體從根本恢復活力節奏。'
+  },
+  heat_better: {
+    icon:'',
+    name:'喜溫惡寒體質',
+    headline:'熱敷後舒服，是虛寒體質的典型訊號',
+    desc:'遇熱則緩、遇寒則劇，正是穴位敷貼辛溫藥性最能對路的體質表現。這個特徵讓醫師在選穴方向上更有依據，敷貼的調理效果也比較有機會到位。'
+  },
+  weak_immune: {
+    icon:'aqua',
+    name:'衛氣不固調理',
+    headline:'容易感冒、怕風，是衛陽不足的表現',
+    desc:'容易感冒、恢復慢、怕風，中醫從衛氣不足、陽氣不固的方向評估。三伏天穴位敷貼在傳統上正是以「冬病夏治、補陽固表」為主要思路，減少冬天反覆感冒的循環。'
+  },
+  low_energy: {
+    icon:'yellow',
+    name:'脾腎陽虛調理',
+    headline:'精神體力一直偏低，不只是「累」',
+    desc:'長期體力不佳、精神難以振作，可能是脾腎陽氣需要整理的訊號。敷貼從溫補的角度切入，協助陽氣慢慢恢復，是體質整體調整的一環。'
+  },
+};
+
+const ICON_SVG = {
+  '': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FF8811" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+  aqua: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#9DD9D2" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M4.93 4.93l14.14 14.14"/></svg>`,
+  yellow: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8860B" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+};
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + idx).classList.add('active');
+  window.scrollTo({ top:0, behavior:'instant' });
+  currentScreen = idx;
+  updateProgress();
+}
+function showCTA(html){ const b = document.getElementById('stickyCTA'); b.innerHTML = html; b.classList.add('show'); }
+function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'); }
+
+/* ── Screen 0 ── */
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); initS1(); });
+}
+
+/* ── Screen 1: Contraindication ── */
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，想先確認</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click', () => {
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click', () => {
+    if(contraFlags.size === 0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+/* ── Build quiz questions ── */
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s' + screenId);
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx + 1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o => `
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-inner"><span class="opt-dot" aria-hidden="true"></span>${o.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId] = { val: btn.dataset.val, pts: parseInt(btn.dataset.pts) };
+      const nextScreen = screenId + 1;
+      setTimeout(() => {
+        hideCTA();
+        if(nextScreen <= 4){ showScreen(nextScreen); }
+        else { showScreen(RESULT_SCREEN); buildResult(); }
+      }, 300);
+    });
+  });
+}
+
+/* ── Build result ── */
+function buildResult(){
+  let total = 0;
+  const vals = [];
+  Object.values(selectedOptions).forEach(({ val, pts }) => {
+    total += pts;
+    vals.push(val);
+  });
+
+  const el = document.getElementById('s' + RESULT_SCREEN);
+
+  const seen = new Set();
+  const cardKeys = vals.filter(v => {
+    const d = ASPECT_BY_VAL[v];
+    if(!d || seen.has(d.name)) return false;
+    seen.add(d.name);
+    return true;
+  });
+
+  function renderCards(keys){
+    return `<div class="aspect-cards">${keys.map(k => {
+      const d = ASPECT_BY_VAL[k];
+      return `<div class="aspect-card">
+        <div class="aspect-icon ${d.icon}">${ICON_SVG[d.icon] || ICON_SVG['']}</div>
+        <div>
+          <div class="aspect-name">${d.name}</div>
+          <div class="aspect-headline">${d.headline}</div>
+          <div class="aspect-desc">${d.desc}</div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  if(total >= 4){
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FF8811" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>很符合敷貼的方向</span>
+      </div>
+      <h2 class="result-title">穴位敷貼很可能<br>適合你的體質方向</h2>
+      <p class="result-body">根據你的填答，以下是對應你情況的調理方向說明——</p>
+      ${renderCards(cardKeys)}
+      <div class="ref-note">穴位敷貼需由醫師辨證評估後安排，不同體質選穴方向不同，效果因個人狀況而異。本測驗僅供參考，不構成醫療診斷。</div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="mainBtn">向櫃檯詢問，安排門診評估</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  } else if(total >= 1){
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9DD9D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些方向值得評估</span>
+      </div>
+      <h2 class="result-title">部分情況<br>與敷貼的方向有重疊</h2>
+      <p class="result-body">你的描述有一些虛寒的方向，但還需要醫師進一步確認體質。可以向同仁詢問，安排一次門診評估，讓醫師判斷是否適合、如何安排。</p>
+      ${renderCards(cardKeys.slice(0, 2))}
+      <div class="ref-note">是否適合敷貼、選取哪些穴位，需由醫師面診辨證後決定。本測驗僅供參考，不構成醫療診斷。</div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="mainBtn">向櫃檯詢問，安排門診評估</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  } else {
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9DD9D2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前狀態看起來不錯</span>
+      </div>
+      <h2 class="result-title">你目前的描述<br>不是典型的虛寒方向</h2>
+      <p class="low-desc">穴位敷貼的辛溫藥性主要針對虛寒體質，若你目前沒有明顯的怕冷、疲倦或相關症狀，不一定是現在最優先的選項。若有疑問，歡迎先到櫃檯詢問，同仁可以幫你說明。</p>
+    `;
+    const bar = document.getElementById('stickyCTA');
+    bar.innerHTML = '';
+    const ghost = document.createElement('button');
+    ghost.className = 'btn-ghost';
+    ghost.textContent = '回到產品目錄';
+    ghost.addEventListener('click', () => { window.location.href = '../index.html'; });
+    bar.appendChild(ghost);
+    bar.classList.add('show');
+    return;
+  }
+
+  document.getElementById('mainBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Build ask (contraindication) ── */
+function buildAsk(){
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  let bodyText = '你勾選的情況，建議先向同仁說明，讓我們協助確認是否適合敷貼，以及需要注意的事項。';
+  if(contraFlags.has('heat')){
+    bodyText = '陰虛火旺體質（口乾、手腳心發熱、燥熱感）與敷貼的辛溫藥性方向相反，不一定適合。建議先向同仁說明，讓同仁協助安排醫師評估。';
+  } else if(contraFlags.has('dampHeat')){
+    bodyText = '濕熱體質（口苦、灼熱感、分泌物偏黃）需先確認是否有發炎或感染狀況，敷貼前建議讓醫師評估體質方向。向同仁詢問，我們協助安排。';
+  } else if(contraFlags.has('skin')){
+    bodyText = '皮膚嚴重過敏或蟹足腫體質，敷貼可能造成較大的皮膚反應。建議先向同仁說明，讓醫師評估你的皮膚狀況後再決定是否適合。';
+  } else if(contraFlags.has('pregnant')){
+    bodyText = '懷孕期間不建議自行進行穴位敷貼，尤其腹部與腰背部穴位需特別謹慎。有備孕計畫的話，可以先向同仁說明，讓醫師幫你評估。';
+  }
+  el.innerHTML = `
+    <div class="section-label">建議先向同仁確認</div>
+    <h2 class="result-title">有幾點需要<br>先讓醫師了解一下</h2>
+    <div class="consult-box">
+      <p>${bodyText}</p>
+    </div>
+    <div class="ref-note">這不代表你一定不適合敷貼，而是讓醫師幫你確認後更安心。可以帶著這個頁面向同仁說明你的情況。</div>
+  `;
+  showCTA(`
+    <button class="btn-primary" id="mainBtn">向櫃檯詢問，同仁協助安排</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `);
+  document.getElementById('mainBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Init ── */
+[2, 3, 4].forEach((sid, qi) => buildQuestion(sid, qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
