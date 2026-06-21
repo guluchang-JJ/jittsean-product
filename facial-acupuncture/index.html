@@ -193,7 +193,7 @@ body{
 .option-btn[data-score="no"].selected{background:var(--frost-pale)}
 
 /* ── Result screen ── */
-#s6{padding:28px 24px 20px}
+#s6{padding:28px 24px calc(160px + env(safe-area-inset-bottom))}
 .result-badge{
   display:inline-flex;align-items:center;gap:8px;
   background:var(--white);border-radius:16px;
