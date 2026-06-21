@@ -172,6 +172,7 @@ body{
 
 .option-group{display:flex;flex-direction:column;gap:10px}
 .option-btn{
+  position:relative;
   background:var(--white);border:2px solid transparent;
   border-radius:20px;padding:18px 20px;
   font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
@@ -179,18 +180,24 @@ body{
   box-shadow:0 4px 0 rgba(0,0,0,.08),0 8px 16px rgba(0,0,0,.05);
   transition:border-color .12s,box-shadow .12s,transform .1s;
   touch-action:manipulation;display:flex;align-items:center;gap:12px;
+  width:100%;
 }
 .option-btn:active{transform:scale(.98)}
-.option-icon{
-  width:36px;height:36px;border-radius:10px;
-  background:var(--beige);flex-shrink:0;
-  display:flex;align-items:center;justify-content:center;
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(0,0,0,.22);
+  transition:background .12s;
 }
-.option-btn[data-hi="1"] .option-icon{background:var(--tea)}
-.option-btn[data-hi="0"] .option-icon{background:var(--frost-pale)}
+.opt-inner{display:flex;align-items:center;gap:11px}
+.option-btn.selected .opt-dot{background:var(--steel)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;
+  transform:translateY(-50%);
+  width:8px;height:8px;
+  background:var(--steel);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(119,152,171,.22);
+}
 .option-btn.selected{border-color:var(--steel)}
-.option-btn[data-hi="1"].selected{background:var(--tea-pale)}
-.option-btn[data-hi="0"].selected{background:var(--frost-pale)}
 
 /* ── Result screen ── */
 #s5{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
@@ -463,9 +470,8 @@ function buildQuestion(screenId, qIdx){
     <p class="q-hint">${q.hint}</p>
     <div class="option-group">
       ${q.options.map(o => `
-        <button class="option-btn" data-hi="${o.hi}" data-val="${o.val}" data-pts="${o.pts}">
-          <div class="option-icon">${SVG_ICONS[o.icon] || ''}</div>
-          <span>${o.label}</span>
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-inner"><span class="opt-dot" aria-hidden="true"></span>${o.label}</span>
         </button>
       `).join('')}
     </div>
