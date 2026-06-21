@@ -413,6 +413,8 @@
     /* ============================================================
        REDUCED MOTION
        ============================================================ */
+    #screen6 { padding-bottom: calc(220px + env(safe-area-inset-bottom)); }
+
     @media (prefers-reduced-motion: reduce) {
       .screen { transition: none !important; }
       .ing-card { opacity: 1 !important; transform: none !important; }
