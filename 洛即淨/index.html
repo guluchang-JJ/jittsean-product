@@ -198,7 +198,7 @@ body{
 .option-btn.selected{border-color:var(--pink)}
 
 /* ── Result screen ── */
-#s5{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+#s4{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
 .result-badge{
   display:inline-flex;align-items:center;gap:8px;
   background:var(--white);border-radius:16px;
@@ -276,55 +276,21 @@ body{
   </div>
 </div>
 
-<!-- Screen 1: Contraindication -->
-<div class="screen" id="s1">
-  <div class="section-label">開始之前</div>
-  <h2 class="screen-title">有以下情況嗎？</h2>
-  <p class="screen-sub">這些情況建議先向同仁確認再使用。勾選符合的，或直接點「沒有，繼續」。</p>
-  <div class="check-group">
-    <label class="check-card" data-val="pregnant">
-      <div class="check-box">
-        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <span class="check-label">目前懷孕、備孕或哺乳中</span>
-    </label>
-    <label class="check-card" data-val="allergy">
-      <div class="check-box">
-        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <span class="check-label">對蔓越莓、洛神花或莓果類有過敏反應</span>
-    </label>
-    <label class="check-card" data-val="kidney">
-      <div class="check-box">
-        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <span class="check-label">有腎臟相關疾病（腎結石、腎功能不全等）</span>
-    </label>
-    <label class="check-card" data-val="age">
-      <div class="check-box">
-        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </div>
-      <span class="check-label">12 歲以下兒童</span>
-    </label>
-  </div>
-</div>
-
-<!-- Screens 2–4: Questions (built by JS) -->
+<!-- Screens 1–3: Questions (built by JS) -->
+<div class="screen quiz-screen" id="s1"></div>
 <div class="screen quiz-screen" id="s2"></div>
 <div class="screen quiz-screen" id="s3"></div>
-<div class="screen quiz-screen" id="s4"></div>
 
-<!-- Screen 5: Result -->
-<div class="screen" id="s5"></div>
+<!-- Screen 4: Result -->
+<div class="screen" id="s4"></div>
 
 <!-- Sticky CTA -->
 <div id="stickyCTA"></div>
 
 <script>
-const TOTAL_SCREENS = 6;
-const RESULT_SCREEN = 5;
+const TOTAL_SCREENS = 5;
+const RESULT_SCREEN = 4;
 let currentScreen = 0;
-let contraFlags = new Set();
 let selectedOptions = {};
 
 const QUESTIONS = [
@@ -438,31 +404,7 @@ function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'
 /* ── Screen 0 ── */
 function initS0(){
   showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
-  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); initS1(); });
-}
-
-/* ── Screen 1 ── */
-function initS1(){
-  document.querySelectorAll('#s1 .check-card').forEach(card => {
-    card.addEventListener('click', () => {
-      card.classList.toggle('selected');
-      const v = card.dataset.val;
-      if(card.classList.contains('selected')) contraFlags.add(v);
-      else contraFlags.delete(v);
-    });
-  });
-  showCTA(`
-    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
-    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議詢問</button>
-  `);
-  document.getElementById('contraNextBtn').addEventListener('click', () => {
-    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
-    hideCTA(); showScreen(2);
-  });
-  document.getElementById('contraAskBtn').addEventListener('click', () => {
-    if(contraFlags.size === 0) contraFlags.add('general');
-    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
-  });
+  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); });
 }
 
 /* ── Build quiz questions ── */
@@ -489,7 +431,7 @@ function buildQuestion(screenId, qIdx){
       const nextScreen = screenId + 1;
       setTimeout(() => {
         hideCTA();
-        if(nextScreen <= 4){ showScreen(nextScreen); }
+        if(nextScreen <= 3){ showScreen(nextScreen); }
         else { showScreen(RESULT_SCREEN); buildResult(); }
       }, 300);
     });
@@ -593,35 +535,9 @@ function buildResult(){
 }
 
 /* ── Build ask (contraindication) ── */
-function buildAsk(){
-  const el = document.getElementById('s' + RESULT_SCREEN);
-  let bodyText = '你勾選的情況，建議先向同仁詢問，讓我們協助確認是否適合再使用。';
-  if(contraFlags.has('pregnant')){
-    bodyText = '懷孕、備孕或哺乳期間的身體狀態比較特殊，保健品的使用建議先向同仁確認，讓我們協助了解是否適合。';
-  } else if(contraFlags.has('allergy')){
-    bodyText = '對莓果類有過敏反應的話，建議先向同仁說明，我們可以幫你確認成分是否適合。';
-  } else if(contraFlags.has('kidney')){
-    bodyText = '腎臟相關疾病在使用高濃度莓果萃取品前建議先確認。可以向同仁詢問，讓我們協助了解你的狀況。';
-  } else if(contraFlags.has('age')){
-    bodyText = '12 歲以下兒童的保健品使用需要特別謹慎，建議先向同仁詢問後再決定。';
-  }
-  el.innerHTML = `
-    <div class="section-label">建議先確認</div>
-    <h2 class="result-title">有幾點需要<br>先向同仁確認一下</h2>
-    <div class="consult-box">
-      <p>${bodyText}</p>
-    </div>
-  `;
-  showCTA(`
-    <button class="btn-primary" id="mainBtn">向櫃檯詢問，同仁協助確認</button>
-    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
-  `);
-  document.getElementById('mainBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
-  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
-}
 
 /* ── Init ── */
-[2, 3, 4].forEach((sid, qi) => buildQuestion(sid, qi));
+[1, 2, 3].forEach((sid, qi) => buildQuestion(sid, qi));
 initS0();
 updateProgress();
 </script>
