@@ -689,7 +689,7 @@
         // Configure sticky CTA per screen
         if (id === 'welcome') showCTA('開始評估', true);
         if (id === 'contra')  showCTA('繼續', false);
-        if (id === 'quiz')    showCTA(S.qIdx === QUESTIONS.length - 1 ? '查看結果' : '下一題', false);
+        if (id === 'quiz')    hideCTA(); // auto-advance on pick — no manual CTA needed
         if (id === 'result') {
           // CTA varies — set inside buildResult
         }
@@ -846,8 +846,8 @@
     if (opt.tag) S.tags[opt.tag] = (S.tags[opt.tag] || 0) + opt.score;
     S.picked = true;
 
-    const isLast = S.qIdx === QUESTIONS.length - 1;
-    showCTA(isLast ? '查看結果' : '下一題', true);
+    // Auto-advance after brief highlight
+    setTimeout(() => nextQ(), 300);
   }
 
   function nextQ() {

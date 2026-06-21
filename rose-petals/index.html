@@ -722,12 +722,8 @@ function updateCTA() {
     cta.appendChild(make('繼續', () => { showScreen(2); buildQuestion(2, 0); }, 'btnContinue'));
     cta.classList.add('show');
   } else if (S.screen >= 2 && S.screen <= 5) {
-    const qIdx = S.screen - 2;
-    const isLast = qIdx === TOTAL_Q - 1;
-    const btn = make(isLast ? '查看結果' : '下一題', () => advanceQ(qIdx), 'btnNext');
-    btn.disabled = (S.answers[qIdx] === undefined);
-    cta.appendChild(btn);
-    cta.classList.add('show');
+    // Auto-advance on pick — no manual CTA needed during quiz
+    cta.classList.remove('show');
   }
 }
 
@@ -755,8 +751,8 @@ function selectOpt(screenId, qIdx, optIdx) {
   qs(`#qOpts${screenId}`).querySelectorAll('.opt-btn').forEach((b, i) => {
     b.classList.toggle('picked', i === optIdx);
   });
-  const btn = qs('#btnNext');
-  if (btn) btn.disabled = false;
+  // Auto-advance after brief highlight
+  setTimeout(() => advanceQ(qIdx), 300);
 }
 
 function advanceQ(qIdx) {
