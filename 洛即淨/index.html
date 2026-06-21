@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>洛即淨自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  --pink:#EA526F;
+  --pink-pale:#FDE8EC;
+  --pink-rgb:234,82,111;
+  --teal:#23B5D3;
+  --teal-pale:#D8F2FA;
+  --teal-rgb:35,181,211;
+  --ink:#070600;
+  --ink-mid:rgba(7,6,0,.65);
+  --white:#F7F7FF;
+  --bg:#FEF0F3;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── Screens ── */
+.screen{
+  display:none;
+  min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+#s0.active{display:flex;flex-direction:column}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress bar ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(234,82,111,.18);
+}
+.progress-bar{
+  height:100%;background:var(--pink);
+  transition:width .4s ease;
+  border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--pink);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;
+  cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 rgba(var(--pink-rgb),.35),0 10px 20px rgba(var(--pink-rgb),.18);
+  transition:transform .12s ease,box-shadow .12s ease;
+  touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(var(--pink-rgb),.35),0 5px 12px rgba(var(--pink-rgb),.15)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(7,6,0,.25);border-radius:20px;
+  cursor:pointer;text-align:center;
+  transition:background .15s;
+  touch-action:manipulation;
+}
+.btn-ghost:active{background:rgba(7,6,0,.06)}
+
+/* ── Screen 0: Welcome ── */
+.hero-img{
+  width:100%;height:260px;object-fit:cover;object-position:center;
+  border-radius:0 0 32px 32px;
+  background:linear-gradient(135deg, var(--pink-pale) 0%, var(--teal-pale) 100%);
+}
+.hero-img-fallback{
+  width:100%;height:260px;
+  border-radius:0 0 32px 32px;
+  background:linear-gradient(135deg, #FDE8EC 0%, #fbb6c4 40%, #D8F2FA 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-img-fallback svg{opacity:.35}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;
+  background:var(--teal);color:#fff;
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--ink);margin-bottom:12px;
+}
+.hero-sub{
+  font-size:15px;line-height:1.9;color:var(--ink-mid);
+  margin-bottom:24px;
+}
+.hero-card{
+  background:var(--white);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(0,0,0,.08),0 10px 24px rgba(0,0,0,.06);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--ink-mid)}
+.hero-card strong{color:var(--teal);font-weight:600}
+
+/* ── Screen 1: Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;
+  color:var(--teal);text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--ink-mid);margin-bottom:28px}
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--white);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(0,0,0,.07),0 8px 16px rgba(0,0,0,.05);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  border:2px solid transparent;
+  touch-action:manipulation;
+}
+.check-card.selected{
+  border-color:var(--teal);
+  box-shadow:0 4px 0 rgba(var(--teal-rgb),.25),0 8px 16px rgba(var(--teal-rgb),.12);
+}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;
+  border:2px solid rgba(35,181,211,.35);
+  flex-shrink:0;transition:background .15s,border-color .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.check-card.selected .check-box{background:var(--teal);border-color:var(--teal)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.6;color:var(--ink)}
+
+/* ── Quiz questions ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:6px}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--ink-mid);margin-bottom:28px}
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;
+  background:var(--white);border:2px solid transparent;
+  border-radius:20px;padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--ink);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(0,0,0,.08),0 8px 16px rgba(0,0,0,.05);
+  transition:border-color .12s,box-shadow .12s,transform .1s;
+  touch-action:manipulation;display:flex;align-items:center;gap:12px;
+  width:100%;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-inner{display:flex;align-items:center;gap:11px}
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(0,0,0,.22);
+  transition:background .12s;
+}
+.option-btn.selected .opt-dot{background:var(--pink)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;
+  transform:translateY(-50%);
+  width:8px;height:8px;
+  background:var(--pink);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(var(--pink-rgb),.22);
+}
+.option-btn.selected{border-color:var(--pink)}
+
+/* ── Result screen ── */
+#s5{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(0,0,0,.07),0 8px 16px rgba(0,0,0,.05);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--ink)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:28px}
+.ing-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.ing-card{
+  background:var(--white);border-radius:24px;
+  padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.08),0 10px 20px rgba(0,0,0,.06);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ing-icon{
+  width:44px;height:44px;border-radius:14px;
+  background:var(--pink-pale);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.ing-icon.teal{background:var(--teal-pale)}
+.ing-icon.pearl{background:#F0ECE6}
+.ing-name{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:4px;letter-spacing:.01em}
+.ing-headline{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.ing-desc{font-size:13px;line-height:1.8;color:var(--ink-mid)}
+.ref-note{
+  background:var(--teal-pale);border-radius:16px;padding:14px 16px;
+  font-size:12px;line-height:1.7;color:var(--ink);opacity:.65;
+  margin-bottom:24px;
+}
+.consult-box{
+  background:var(--white);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.08),0 10px 20px rgba(0,0,0,.06);
+  font-size:15px;line-height:1.9;color:var(--ink-mid);
+  margin-bottom:24px;
+}
+.low-desc{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:24px}
+
+/* reduce motion */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- Screen 0: Welcome -->
+<div class="screen active" id="s0">
+  <div style="position:relative">
+    <img src="./洛即淨.png" alt="洛即淨產品圖"
+      class="hero-img"
+      onerror="this.style.display='none';document.getElementById('heroFallback').style.display='flex'">
+    <div id="heroFallback" style="display:none" class="hero-img-fallback">
+      <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#EA526F" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
+        <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+        <path d="M9 9h.01M15 9h.01"/>
+      </svg>
+    </div>
+  </div>
+  <div class="hero-content">
+    <span class="tag-pill">INTIMATE HEALTH</span>
+    <h1 class="hero-title">私密處保養，<br>喝對了才有感</h1>
+    <p class="hero-sub">3 個問題，幫你了解洛即淨是否適合你目前的狀況。大約 1 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>洛即淨結合<strong>法國專利洛神花萼萃取</strong>、<strong>北美蔓越莓濃縮</strong>與<strong>珍珠粉</strong>，酸甜帶微泡口感，為泌尿道與私密處的日常保養設計——男女生都可以喝，女生尤其適合。</p>
+  </div>
+</div>
+
+<!-- Screen 1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">這些情況建議先向同仁確認再使用。勾選符合的，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">目前懷孕、備孕或哺乳中</span>
+    </label>
+    <label class="check-card" data-val="allergy">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">對蔓越莓、洛神花或莓果類有過敏反應</span>
+    </label>
+    <label class="check-card" data-val="kidney">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">有腎臟相關疾病（腎結石、腎功能不全等）</span>
+    </label>
+    <label class="check-card" data-val="age">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">12 歲以下兒童</span>
+    </label>
+  </div>
+</div>
+
+<!-- Screens 2–4: Questions (built by JS) -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+
+<!-- Screen 5: Result -->
+<div class="screen" id="s5"></div>
+
+<!-- Sticky CTA -->
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 6;
+const RESULT_SCREEN = 5;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '最近有沒有這樣的感覺？',
+    hint: '選最符合你目前狀況的一項就好',
+    options: [
+      { val:'burn',     pts:2, label:'小便有點酸澀、灼熱感，或頻尿' },
+      { val:'odor',     pts:2, label:'私密處有悶癢感或異味，讓你覺得不太自在' },
+      { val:'maintain', pts:1, label:'目前沒有明顯不舒服，只是想平日保養' },
+    ]
+  },
+  {
+    q: '這種情況，算是你的老朋友了嗎？',
+    hint: '泌尿道或私密處的狀況都算',
+    options: [
+      { val:'recurrent', pts:2, label:'已經反覆發生好幾次了，好了又來' },
+      { val:'firsttime', pts:1, label:'第一次有這樣的感覺，還在觀察' },
+      { val:'referral',  pts:0, label:'朋友介紹的，我自己目前還好' },
+    ]
+  },
+  {
+    q: '你的日常生活，哪個比較像你？',
+    hint: '選最符合的一項',
+    options: [
+      { val:'lowwater', pts:2, label:'工作忙、喝水少，或常常忍著不去廁所' },
+      { val:'cycle',    pts:1, label:'月經前後或某些特定時期特別容易不舒服' },
+      { val:'skin',     pts:1, label:'最近也想讓膚色整體亮一點' },
+    ]
+  }
+];
+
+const ING_BY_VAL = {
+  burn: {
+    icon:'',
+    name:'法國專利洛神花萼萃取',
+    headline:'研究顯示能抑制泌尿道常見致病菌',
+    desc:'洛神花萼萃取對大腸桿菌（E. coli）等泌尿道常見致病菌有抑制效果，研究也指出能干擾細菌在黏膜形成生物膜的能力，有助緩解酸澀灼熱的不適感。'
+  },
+  odor: {
+    icon:'teal',
+    name:'北美蔓越莓濃縮',
+    headline:'原花青素（PAC）讓細菌難以附著',
+    desc:'蔓越莓中的原花青素（PAC）研究顯示能阻止細菌附著在泌尿道與私密處黏膜，多個臨床試驗支持其預防反覆感染的效果，同時有助改善私密處環境的穩定性。'
+  },
+  maintain: {
+    icon:'',
+    name:'洛神花萼 + 蔓越莓雙成分',
+    headline:'平時喝，才是最輕鬆的保養方式',
+    desc:'不需要等到不舒服才補充。研究顯示洛神花萼與蔓越莓 PAC 在規律攝取下保護效果更穩定，養成每天一包的習慣，是對泌尿道最溫和的日常照顧。'
+  },
+  recurrent: {
+    icon:'teal',
+    name:'洛神花萼 + 蔓越莓雙重守護',
+    headline:'從抑菌到阻斷附著，兩道防線同時作用',
+    desc:'反覆感染的背後，常是細菌一次次重新附著黏膜所致。洛神花萼萃取抑制致病菌活性，蔓越莓 PAC 阻斷細菌附著，兩者搭配，有研究支持能有效減少「好了又來」的循環。'
+  },
+  firsttime: {
+    icon:'teal',
+    name:'北美蔓越莓濃縮',
+    headline:'趁早保養，預防的效果更好',
+    desc:'蔓越莓原花青素（PAC）的預防研究相當充分，多個臨床試驗顯示能降低泌尿道感染復發風險。症狀還在輕微階段開始補充，往往比等到嚴重了再處理更有效。'
+  },
+  referral: {
+    icon:'pearl',
+    name:'珍珠粉',
+    headline:'從身體內部讓氣色透出來',
+    desc:'珍珠粉含豐富氨基酸，研究指出其水解蛋白成分能抑制黑色素生成相關的酵素活性，有助讓膚色更均勻透亮。喝起來酸甜帶微泡，也讓補充水分這件事更有動力。'
+  },
+  lowwater: {
+    icon:'',
+    name:'法國專利洛神花萼萃取',
+    headline:'喝得少，泌尿道防禦力自然下降',
+    desc:'水分不足是泌尿道問題的常見誘因之一。洛即淨口感酸甜好喝，讓補充水分更有動力；洛神花萼萃取同時為泌尿道提供額外保護——喝一包，雙重作用。'
+  },
+  cycle: {
+    icon:'teal',
+    name:'北美蔓越莓濃縮',
+    headline:'月經前後，是私密處最需要保護的時候',
+    desc:'荷爾蒙波動會讓陰道內環境的 pH 值改變，細菌更容易繁殖。蔓越莓 PAC 能在這個脆弱時期阻止細菌附著，有助維持私密處的穩定與舒適。'
+  },
+  skin: {
+    icon:'pearl',
+    name:'珍珠粉',
+    headline:'私密處保養，也讓膚色更透亮',
+    desc:'珍珠粉中的水解貝殼蛋白研究顯示能干擾黑色素生成路徑，改善膚色不均。洛即淨讓你在照顧泌尿道的同時，也悄悄給肌膚多一層養護。'
+  },
+};
+
+// ── SVG icons per ing-icon type ──
+const ING_SVG = {
+  '': '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EA526F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+  teal: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#23B5D3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 12h8M12 8v8"/></svg>',
+  pearl: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A89070" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8"/><path d="M9 12a3 3 0 0 1 6 0"/><path d="M12 9v1M12 14v1"/></svg>',
+};
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + idx).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  currentScreen = idx;
+  updateProgress();
+}
+function showCTA(html){ const b = document.getElementById('stickyCTA'); b.innerHTML = html; b.classList.add('show'); }
+function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'); }
+
+/* ── Screen 0 ── */
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); initS1(); });
+}
+
+/* ── Screen 1 ── */
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議詢問</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click', () => {
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click', () => {
+    if(contraFlags.size === 0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+/* ── Build quiz questions ── */
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s' + screenId);
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx + 1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o => `
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-inner"><span class="opt-dot" aria-hidden="true"></span>${o.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId] = { val: btn.dataset.val, pts: parseInt(btn.dataset.pts) };
+      const nextScreen = screenId + 1;
+      setTimeout(() => {
+        hideCTA();
+        if(nextScreen <= 4){ showScreen(nextScreen); }
+        else { showScreen(RESULT_SCREEN); buildResult(); }
+      }, 300);
+    });
+  });
+}
+
+/* ── Build result ── */
+function buildResult(){
+  let total = 0;
+  const vals = [];
+  Object.values(selectedOptions).forEach(({ val, pts }) => {
+    total += pts;
+    vals.push(val);
+  });
+
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  // deduplicate by ingredient name so same card doesn't appear twice
+  const seen = new Set();
+  const cardKeys = vals.filter(v => {
+    const d = ING_BY_VAL[v];
+    if (!d || seen.has(d.name)) return false;
+    seen.add(d.name);
+    return true;
+  });
+
+  if(total >= 4){
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="${'#EA526F'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>很符合你的狀況</span>
+      </div>
+      <h2 class="result-title">洛即淨正好適合<br>你目前的需求</h2>
+      <p class="result-body">根據你的填答，以下是對應你情況的說明——</p>
+      <div class="ing-cards">
+        ${cardKeys.map(k => {
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">${ING_SVG[d.icon] || ING_SVG['']}</div>
+            <div>
+              <div class="ing-name">${d.name}</div>
+              <div class="ing-headline">${d.headline}</div>
+              <div class="ing-desc">${d.desc}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+      <div class="ref-note">參考資料：Eur J Clin Nutr 2012；Frontiers in Nutrition 2024（Meta分析）；PMC10138581（珍珠粉美白機制）。研究結果因個人體質而異，本測驗僅供參考，不構成醫療診斷。</div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="mainBtn">向櫃檯詢問，了解如何取得</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  } else if(total >= 1){
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#23B5D3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些面向值得了解</span>
+      </div>
+      <h2 class="result-title">洛即淨有機會<br>幫到你的方向</h2>
+      <p class="result-body">你的部分狀況和洛即淨的成分方向有重疊。如果想更了解，可以到櫃檯詢問，同仁會幫你說明。</p>
+      <div class="ing-cards">
+        ${cardKeys.slice(0,2).map(k => {
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">${ING_SVG[d.icon] || ING_SVG['']}</div>
+            <div>
+              <div class="ing-name">${d.name}</div>
+              <div class="ing-headline">${d.headline}</div>
+              <div class="ing-desc">${d.desc}</div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="mainBtn">向櫃檯詢問，同仁說明取得方式</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  } else {
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#23B5D3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前狀態還好</span>
+      </div>
+      <h2 class="result-title">你現在的狀態<br>看起來不錯</h2>
+      <p class="low-desc">從你的填答來看，目前沒有特別明顯的需求。洛即淨也很適合作為日常預防的保養飲品，之後有興趣隨時可以詢問。</p>
+    `;
+    const bar = document.getElementById('stickyCTA');
+    bar.innerHTML = '';
+    const ghost = document.createElement('button');
+    ghost.className = 'btn-ghost';
+    ghost.textContent = '回到產品目錄';
+    ghost.addEventListener('click', () => { window.location.href = '../index.html'; });
+    bar.appendChild(ghost);
+    bar.classList.add('show');
+    return;
+  }
+
+  document.getElementById('mainBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Build ask (contraindication) ── */
+function buildAsk(){
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  let bodyText = '你勾選的情況，建議先向同仁詢問，讓我們協助確認是否適合再使用。';
+  if(contraFlags.has('pregnant')){
+    bodyText = '懷孕、備孕或哺乳期間的身體狀態比較特殊，保健品的使用建議先向同仁確認，讓我們協助了解是否適合。';
+  } else if(contraFlags.has('allergy')){
+    bodyText = '對莓果類有過敏反應的話，建議先向同仁說明，我們可以幫你確認成分是否適合。';
+  } else if(contraFlags.has('kidney')){
+    bodyText = '腎臟相關疾病在使用高濃度莓果萃取品前建議先確認。可以向同仁詢問，讓我們協助了解你的狀況。';
+  } else if(contraFlags.has('age')){
+    bodyText = '12 歲以下兒童的保健品使用需要特別謹慎，建議先向同仁詢問後再決定。';
+  }
+  el.innerHTML = `
+    <div class="section-label">建議先確認</div>
+    <h2 class="result-title">有幾點需要<br>先向同仁確認一下</h2>
+    <div class="consult-box">
+      <p>${bodyText}</p>
+    </div>
+  `;
+  showCTA(`
+    <button class="btn-primary" id="mainBtn">向櫃檯詢問，同仁協助確認</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `);
+  document.getElementById('mainBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Init ── */
+[2, 3, 4].forEach((sid, qi) => buildQuestion(sid, qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
