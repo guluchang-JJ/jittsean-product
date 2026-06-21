@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>穴位埋線自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  --taupe:#93827F;
+  --taupe-pale:#F5F0EF;
+  --taupe-rgb:147,130,127;
+  --cream:#F3F9D2;
+  --sage:#BDC4A7;
+  --sage-pale:#EFF2E8;
+  --graphite:#2F2F2F;
+  --graphite-mid:rgba(47,47,47,.62);
+  --teal:#92B4A7;
+  --teal-pale:#E6F0ED;
+  --teal-rgb:146,180,167;
+  --bg:#F8F9F3;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--graphite);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── Screens ── */
+.screen{
+  display:none;
+  min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+#s0.active{display:flex;flex-direction:column}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress bar ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(146,180,167,.2);
+}
+.progress-bar{
+  height:100%;background:var(--teal);
+  transition:width .4s ease;border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--graphite);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 rgba(47,47,47,.3),0 10px 20px rgba(47,47,47,.14);
+  transition:transform .12s ease,box-shadow .12s ease;touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(47,47,47,.3),0 5px 12px rgba(47,47,47,.12)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--graphite);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(47,47,47,.2);border-radius:20px;
+  cursor:pointer;text-align:center;transition:background .15s;touch-action:manipulation;
+}
+.btn-ghost:active{background:rgba(47,47,47,.06)}
+
+/* ── Screen 0: Welcome ── */
+.hero-img{
+  width:100%;height:260px;object-fit:cover;object-position:center;
+  border-radius:0 0 32px 32px;
+  background:linear-gradient(135deg,var(--sage-pale),var(--teal-pale));
+}
+.hero-img-fallback{
+  width:100%;height:260px;border-radius:0 0 32px 32px;
+  background:linear-gradient(135deg,#F3F9D2 0%,#BDC4A7 60%,#92B4A7 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;background:var(--sage);color:var(--graphite);
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--graphite);margin-bottom:12px;
+}
+.hero-sub{font-size:15px;line-height:1.9;color:var(--graphite-mid);margin-bottom:24px}
+.hero-card{
+  background:var(--cream);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(0,0,0,.06),0 10px 24px rgba(0,0,0,.04);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--graphite-mid)}
+.hero-card strong{color:var(--teal);font-weight:600}
+
+/* ── Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;
+  color:var(--taupe);text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--graphite-mid);margin-bottom:28px}
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:flex-start;gap:14px;
+  background:var(--cream);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(0,0,0,.06),0 8px 16px rgba(0,0,0,.04);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  border:2px solid transparent;touch-action:manipulation;
+}
+.check-card.selected{
+  border-color:var(--taupe);
+  box-shadow:0 4px 0 rgba(var(--taupe-rgb),.2),0 8px 16px rgba(var(--taupe-rgb),.1);
+}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;min-width:22px;border-radius:6px;
+  border:2px solid rgba(147,130,127,.35);
+  transition:background .15s,border-color .15s;
+  display:flex;align-items:center;justify-content:center;margin-top:1px;
+}
+.check-card.selected .check-box{background:var(--taupe);border-color:var(--taupe)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.65;color:var(--graphite)}
+
+/* ── Quiz questions ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:6px}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--graphite-mid);margin-bottom:28px}
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;
+  background:var(--cream);border:2px solid transparent;
+  border-radius:20px;padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--graphite);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(0,0,0,.06),0 8px 16px rgba(0,0,0,.04);
+  transition:border-color .12s,box-shadow .12s,transform .1s;
+  touch-action:manipulation;display:flex;align-items:center;gap:12px;width:100%;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-inner{display:flex;align-items:center;gap:11px}
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(47,47,47,.2);transition:background .12s;
+}
+.option-btn.selected .opt-dot{background:var(--teal)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;background:var(--teal);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(var(--teal-rgb),.22);
+}
+.option-btn.selected{border-color:var(--teal)}
+
+/* ── Result ── */
+#s5{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--cream);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(0,0,0,.06),0 8px 16px rgba(0,0,0,.04);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--graphite)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--graphite-mid);margin-bottom:28px}
+.aspect-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.aspect-card{
+  background:var(--cream);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.07),0 10px 20px rgba(0,0,0,.05);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.aspect-icon{
+  width:44px;height:44px;min-width:44px;border-radius:14px;
+  background:var(--teal-pale);
+  display:flex;align-items:center;justify-content:center;
+}
+.aspect-icon.sage{background:var(--sage-pale)}
+.aspect-icon.taupe{background:var(--taupe-pale)}
+.aspect-name{font-size:13px;font-weight:600;color:var(--teal);margin-bottom:4px;letter-spacing:.01em}
+.aspect-name.taupe{color:var(--taupe)}
+.aspect-name.sage{color:#7a8a6a}
+.aspect-headline{font-size:16px;font-weight:700;color:var(--graphite);margin-bottom:6px;line-height:1.4}
+.aspect-desc{font-size:13px;line-height:1.8;color:var(--graphite-mid)}
+.ref-note{
+  background:var(--sage-pale);border-radius:16px;padding:14px 16px;
+  font-size:12px;line-height:1.7;color:var(--graphite);opacity:.7;margin-bottom:24px;
+}
+.honest-box{
+  background:var(--cream);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.07),0 10px 20px rgba(0,0,0,.05);
+  border-left:4px solid var(--sage);
+  margin-bottom:24px;
+}
+.honest-label{font-size:12px;font-weight:600;color:#7a8a6a;letter-spacing:.06em;margin-bottom:8px}
+.honest-text{font-size:15px;line-height:1.9;color:var(--graphite-mid)}
+.consult-box{
+  background:var(--cream);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.07),0 10px 20px rgba(0,0,0,.05);
+  font-size:15px;line-height:1.9;color:var(--graphite-mid);margin-bottom:24px;
+}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- Screen 0 -->
+<div class="screen active" id="s0">
+  <div style="position:relative">
+    <img src="./hero.webp" alt="穴位埋線療程示意"
+      class="hero-img"
+      onerror="this.style.display='none';document.getElementById('heroFallback').style.display='flex'">
+    <div id="heroFallback" style="display:none" class="hero-img-fallback">
+      <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#BDC4A7" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M8 12h8M12 8v8"/>
+      </svg>
+    </div>
+  </div>
+  <div class="hero-content">
+    <span class="tag-pill">CATGUT EMBEDDING</span>
+    <h1 class="hero-title">讓穴位刺激延續，<br>讓調理更有節奏</h1>
+    <p class="hero-sub">4 個問題，了解穴位埋線是否符合你目前的狀況。大約 1 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>穴位埋線將<strong>可吸收線材</strong>置入特定穴位，讓穴位刺激時間比一般針灸更長。適合想透過持續穴位調理協助<strong>體重管理或體質調整</strong>的族群，需由醫師評估體質與需求後安排。</p>
+  </div>
+</div>
+
+<!-- Screen 1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">穴位埋線屬侵入性處置，以下情況需先讓同仁確認。勾選符合的，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">目前懷孕、備孕中或哺乳中</span>
+    </label>
+    <label class="check-card" data-val="skin">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">皮膚容易嚴重過敏、有蟹足腫，或傷口不容易癒合</span>
+    </label>
+    <label class="check-card" data-val="medical">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">有凝血問題、免疫相關疾病，或固定需要服藥</span>
+    </label>
+    <label class="check-card" data-val="allergy">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">曾對線材、敷料或消毒用品有過敏反應</span>
+    </label>
+  </div>
+</div>
+
+<!-- Screens 2–4: Questions -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+
+<!-- Screen 5: Result -->
+<div class="screen" id="s5"></div>
+
+<!-- Sticky CTA -->
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 6;
+const RESULT_SCREEN = 5;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '你主要想透過埋線調整的是？',
+    hint: '選最符合你目前想法的一項',
+    options: [
+      { val:'weight',       pts:2, label:'體重管理——搭配中醫減重一起進行' },
+      { val:'metabolism',   pts:2, label:'身體感覺沉重、代謝節奏不穩，想調整' },
+      { val:'constitution', pts:2, label:'長期做針灸調理，想換看看更持久的方式' },
+      { val:'curious',      pts:1, label:'還在了解埋線是什麼，看看適不適合自己' },
+    ]
+  },
+  {
+    q: '你現在的飲食習慣，哪個比較像你？',
+    hint: '這個問題很影響埋線效果，請誠實選',
+    options: [
+      { val:'diet_control', pts:2, label:'飲食已在控制，但效果不穩定，想多一點輔助' },
+      { val:'diet_aware',   pts:1, label:'大概知道要調整，但還沒真的開始執行' },
+      { val:'diet_hard',    pts:0, label:'應酬多、飲食很難控制，短期內難以改變' },
+    ]
+  },
+  {
+    q: '你目前的生活作息？',
+    hint: '中醫調理需要配合生活節奏',
+    options: [
+      { val:'lifestyle_good', pts:2, label:'睡眠和基本活動量都還算規律' },
+      { val:'lifestyle_ok',   pts:1, label:'有些地方不穩定，但願意配合調整' },
+      { val:'lifestyle_poor', pts:0, label:'壓力大、很不規律，睡覺時間都不固定' },
+    ]
+  }
+];
+
+const ASPECT_BY_VAL = {
+  weight: {
+    icon:'', iconClass:'',
+    name:'體重管理輔助',
+    headline:'埋線可作為中醫減重的穴位刺激補充',
+    desc:'埋線讓特定穴位的刺激得以延續，可搭配中醫減重療程使用。效果因體質、飲食配合程度與個人狀況而異，醫師會依評估建議搭配方式。'
+  },
+  metabolism: {
+    icon:'sage', iconClass:'sage',
+    name:'代謝調整方向',
+    headline:'身體沉重，可能與氣機不暢或水濕有關',
+    desc:'長期身體沉重、代謝節奏不穩，中醫常從氣血循環與濕滯的方向評估。埋線可在醫師選穴後，提供較持續的穴位調整刺激，協助慢慢整理體質方向。'
+  },
+  constitution: {
+    icon:'', iconClass:'',
+    name:'體質持續調理',
+    headline:'比一般針灸更長效的穴位刺激選項',
+    desc:'曾做過針灸的人，埋線提供了讓穴位刺激延續的選擇。是否適合從針灸轉為或搭配埋線，需要醫師依目前體質狀況評估，選穴與療程間隔也各不相同。'
+  },
+  curious: {
+    icon:'taupe', iconClass:'taupe',
+    name:'先了解再決定',
+    headline:'充分了解後再決定，是最好的方式',
+    desc:'埋線屬侵入性處置，建議在了解療程內容、適應症與注意事項後再決定。門診諮詢時，醫師可以針對你的狀況說明是否適合，以及大致的療程安排方向。'
+  },
+  diet_control: {
+    icon:'sage', iconClass:'sage',
+    name:'飲食配合是關鍵基礎',
+    headline:'已在控制飲食，是埋線效果的最重要前提',
+    desc:'埋線的穴位刺激是輔助工具，但飲食配合才是讓效果能出現的核心。你已經在控制飲食，這是最重要的一步——埋線在這個基礎上才有機會發揮作用。'
+  },
+  diet_aware: {
+    icon:'sage', iconClass:'sage',
+    name:'飲食調整是下一步',
+    headline:'開始調整飲食，才有讓埋線發揮的空間',
+    desc:'埋線需要搭配飲食調整，效果才能穩定出現。如果你已在計畫改變飲食習慣，這個時機點來諮詢埋線也會更合適——醫師可以幫你一起規劃方向。'
+  },
+  diet_hard: {
+    icon:'taupe', iconClass:'taupe',
+    name:'關於飲食與效果的誠實說明',
+    headline:'埋線需要配合飲食，才有機會出現效果',
+    desc:'如果飲食沒有配合，埋線的效果會非常有限。這不是說埋線沒有用，而是穴位刺激只能做到一部份——飲食調整才是讓身體方向改變的關鍵。歡迎先和同仁聊聊，一起評估目前的狀況。'
+  },
+  lifestyle_good: {
+    icon:'', iconClass:'',
+    name:'作息基礎穩定',
+    headline:'規律的生活節奏，讓調理更有方向',
+    desc:'穩定的睡眠和基本的活動量，是任何中醫調理都需要的基礎。你目前的生活節奏，比較有利於療程效果的累積和發揮。'
+  },
+  lifestyle_ok: {
+    icon:'sage', iconClass:'sage',
+    name:'生活配合調整',
+    headline:'願意調整，比目前狀況更重要',
+    desc:'中醫調理不要求生活完美，但穩定的配合是效果累積的關鍵。你願意調整，醫師也會依你實際的生活狀況，給出合理可行的建議方向。'
+  },
+  lifestyle_poor: {
+    icon:'taupe', iconClass:'taupe',
+    name:'作息也需要一起整理',
+    headline:'睡眠不規律時，調理的效果會打折扣',
+    desc:'長期作息不規律、壓力大，身體很難在穴位刺激的介入下有明顯反應。這不代表你不能做埋線，但建議和醫師討論，一起評估從哪裡開始會最有效率。'
+  },
+};
+
+const ICON_SVG = {
+  '': `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#92B4A7" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+  sage: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7a8a6a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+  taupe: `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#93827F" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+};
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + idx).classList.add('active');
+  window.scrollTo({ top:0, behavior:'instant' });
+  currentScreen = idx;
+  updateProgress();
+}
+function showCTA(html){ const b = document.getElementById('stickyCTA'); b.innerHTML = html; b.classList.add('show'); }
+function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'); }
+
+/* ── S0 ── */
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); initS1(); });
+}
+
+/* ── S1 ── */
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，想先確認</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click', () => {
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click', () => {
+    if(contraFlags.size === 0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+/* ── Build quiz ── */
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s' + screenId);
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx + 1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o => `
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-inner"><span class="opt-dot" aria-hidden="true"></span>${o.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId] = { val: btn.dataset.val, pts: parseInt(btn.dataset.pts) };
+      const nextScreen = screenId + 1;
+      setTimeout(() => {
+        hideCTA();
+        if(nextScreen <= 4){ showScreen(nextScreen); }
+        else { showScreen(RESULT_SCREEN); buildResult(); }
+      }, 300);
+    });
+  });
+}
+
+/* ── Build result ── */
+function buildResult(){
+  let total = 0;
+  const vals = [];
+  Object.values(selectedOptions).forEach(({ val, pts }) => {
+    total += pts;
+    vals.push(val);
+  });
+
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  const hasDietHard = vals.includes('diet_hard');
+
+  const seen = new Set();
+  const cardKeys = vals.filter(v => {
+    const d = ASPECT_BY_VAL[v];
+    if(!d || seen.has(d.name)) return false;
+    seen.add(d.name);
+    return true;
+  });
+
+  function renderCards(keys){
+    return `<div class="aspect-cards">${keys.map(k => {
+      const d = ASPECT_BY_VAL[k];
+      return `<div class="aspect-card">
+        <div class="aspect-icon ${d.icon}">${ICON_SVG[d.icon] || ICON_SVG['']}</div>
+        <div>
+          <div class="aspect-name ${d.iconClass}">${d.name}</div>
+          <div class="aspect-headline">${d.headline}</div>
+          <div class="aspect-desc">${d.desc}</div>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  if(hasDietHard){
+    /* 飲食難以配合 → 誠實說明仍歡迎諮詢 */
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#93827F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有一件事想先說清楚</span>
+      </div>
+      <h2 class="result-title">埋線需要配合飲食，<br>效果才能到位</h2>
+      <div class="honest-box">
+        <div class="honest-label">坦白說</div>
+        <p class="honest-text">如果飲食無法配合，穴位埋線的效果會非常有限。埋線只是刺激工具，不能取代飲食調整——身體的方向還是得靠你自己帶。</p>
+      </div>
+      <div class="honest-box">
+        <div class="honest-label">但這樣也可以</div>
+        <p class="honest-text">你可以先來諮詢，讓醫師評估你的體質狀況，討論從什麼地方開始會最實際。不一定要現在就馬上決定做埋線——先了解，比倉促決定更值得。</p>
+      </div>
+      ${renderCards(cardKeys.filter(k => k !== 'diet_hard').slice(0, 2))}
+      <div class="ref-note">穴位埋線屬侵入性處置，需由醫師評估後安排。本測驗僅供參考，不構成醫療診斷。</div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="mainBtn">向櫃檯詢問，先安排諮詢</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  } else if(total >= 4){
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#92B4A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>方向滿符合的</span>
+      </div>
+      <h2 class="result-title">穴位埋線<br>很可能適合你現在的方向</h2>
+      <p class="result-body">根據你的填答，以下是對應你情況的說明——</p>
+      ${renderCards(cardKeys)}
+      <div class="ref-note">穴位埋線屬侵入性處置，需由醫師評估後安排。效果因個人體質、配合程度而異，本測驗僅供參考，不構成醫療診斷。</div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="mainBtn">向櫃檯詢問，安排門診評估</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  } else if(total >= 1){
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#BDC4A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些方向值得評估</span>
+      </div>
+      <h2 class="result-title">部分條件符合，<br>建議先和醫師聊聊</h2>
+      <p class="result-body">你的情況有一些符合埋線的方向，但還有一些條件需要醫師進一步確認。可以先向同仁詢問，讓醫師評估目前的體質狀況是否適合。</p>
+      ${renderCards(cardKeys.slice(0, 2))}
+      <div class="ref-note">穴位埋線屬侵入性處置，需由醫師評估後安排。本測驗僅供參考，不構成醫療診斷。</div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="mainBtn">向櫃檯詢問，安排門診評估</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  } else {
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#BDC4A7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前狀態看起來不太對</span>
+      </div>
+      <h2 class="result-title">現在可能還不是<br>做埋線的好時機</h2>
+      <p class="result-body">根據你的填答，目前的飲食和作息狀況，可能讓埋線很難發揮效果。這不代表你永遠不適合，而是目前先把生活基礎整理好，效果才有可能出現。</p>
+      <p class="result-body">如果有疑問，歡迎先向同仁詢問，讓我們幫你評估。</p>
+    `;
+    const bar = document.getElementById('stickyCTA');
+    bar.innerHTML = '';
+    const ghost = document.createElement('button');
+    ghost.className = 'btn-ghost';
+    ghost.textContent = '回到產品目錄';
+    ghost.addEventListener('click', () => { window.location.href = '../index.html'; });
+    bar.appendChild(ghost);
+    bar.classList.add('show');
+    return;
+  }
+
+  document.getElementById('mainBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Build ask ── */
+function buildAsk(){
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  let bodyText = '你勾選的情況需要先讓同仁確認，再評估是否適合埋線，以及需要注意的事項。這不代表你一定不適合，而是讓醫師確認後更安心。';
+  if(contraFlags.has('pregnant')){
+    bodyText = '懷孕、備孕或哺乳期間，穴位埋線通常不建議進行。若有備孕計畫，建議先向同仁說明，讓醫師評估合適的時機。';
+  } else if(contraFlags.has('skin')){
+    bodyText = '皮膚容易嚴重過敏、有蟹足腫或傷口不易癒合的體質，埋線有較高的局部反應風險。建議先向同仁說明你的皮膚狀況，讓醫師評估後再決定。';
+  } else if(contraFlags.has('medical')){
+    bodyText = '有凝血問題、免疫疾病或固定用藥的情況，埋線前需要醫師詳細了解你目前的健康狀況，才能安全評估是否適合。請先向同仁說明，我們協助安排。';
+  } else if(contraFlags.has('allergy')){
+    bodyText = '曾對線材或敷料有過敏反應的情況，需要讓醫師詳細了解過敏史，確認使用的材料是否安全。建議先向同仁說明，我們幫你安排確認。';
+  }
+  el.innerHTML = `
+    <div class="section-label">建議先向同仁確認</div>
+    <h2 class="result-title">有幾點需要<br>先讓醫師了解一下</h2>
+    <div class="consult-box">
+      <p>${bodyText}</p>
+    </div>
+    <div class="ref-note">這不代表你一定不適合埋線，而是讓醫師確認後更安心。可以帶著這個頁面向同仁說明你的情況。</div>
+  `;
+  showCTA(`
+    <button class="btn-primary" id="mainBtn">向櫃檯詢問，同仁協助安排</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `);
+  document.getElementById('mainBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Init ── */
+[2, 3, 4].forEach((sid, qi) => buildQuestion(sid, qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
