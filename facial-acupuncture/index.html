@@ -521,11 +521,11 @@ function buildResult(){
       <div class="ref-note">參考資料：2024年發表於 Aesthetic Surgery Journal Open Forum 的研究，以 10 位 40 歲以上女性為對象，每週 1 次共 8 次顏面針灸，以 MRI 觀察咬肌體積，結果顯示有統計上顯著的變化。屬小樣本非隨機研究，實際效果因個人體質而異。（DOI: 10.1093/asjof/ojae109）</div>
     `;
     showCTA(`
-      <button class="btn-primary" id="bookBtn">預約諮詢，讓醫師為你評估</button>
+      <button class="btn-primary" id="bookBtn">向櫃檯詢問，了解美顏針療程</button>
       <button class="btn-ghost" id="backBtn">回到產品目錄</button>
     `);
     document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
-    document.getElementById('bookBtn').addEventListener('click', () => { window.location.href = 'https://jittsean.tw/%E7%BE%8E%E9%A1%8F%E9%87%9D'; });
+    document.getElementById('bookBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
 
   } else if(total >= 1){
     // Mid match
@@ -549,11 +549,11 @@ function buildResult(){
       </div>
     `;
     showCTA(`
-      <button class="btn-primary" id="consultBtn">進診間諮詢，讓醫師評估</button>
+      <button class="btn-primary" id="consultBtn">向櫃檯詢問，填寫初診單了解</button>
       <button class="btn-ghost" id="backBtn">回到產品目錄</button>
     `);
     document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
-    document.getElementById('consultBtn').addEventListener('click', () => { window.location.href = 'https://jittsean.tw/%E7%BE%8E%E9%A1%8F%E9%87%9D'; });
+    document.getElementById('consultBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
 
   } else {
     // Low — all "fine/open/flex" selected
@@ -599,12 +599,12 @@ function buildAsk(){
   `;
   const bar = document.getElementById('stickyCTA');
   bar.innerHTML = `
-    <button class="btn-primary" id="clinicBtn">進門診讓醫師評估</button>
+    <button class="btn-primary" id="clinicBtn">向櫃檯詢問，護理師協助安排</button>
     <button class="btn-ghost" id="backBtn">回到產品目錄</button>
   `;
   bar.classList.add('show');
   document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
-  document.getElementById('clinicBtn').addEventListener('click', () => { window.location.href = 'https://jittsean.tw/%E7%BE%8E%E9%A1%8F%E9%87%9D'; });
+  document.getElementById('clinicBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
 }
 
 /* ── Init ── */
