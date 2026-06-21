@@ -1,0 +1,1022 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#FFFBF0">
+  <title>優go鼎 ｜ 適合我嗎？</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant:ital,wght@0,600;0,700;1,600&family=Noto+Serif+TC:wght@600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================
+       VARIABLES — Claymorphism × 香檳金
+       ============================================================ */
+    :root {
+      /* 使用者自訂色票 */
+      --snow:       #FBF5F3;   /* 底色 */
+      --teal:       #8DAA9D;   /* 薄荷綠點綴 */
+      --teal-pale:  #DDE8E4;   /* 薄荷淡色 */
+      --purple:     #522B47;   /* 深紫主色 */
+      --purple-mid: #6B3860;   /* 中紫 */
+      --purple-pale:#F0E6EE;   /* 淡紫底 */
+      --amaranth:   #7B0828;   /* 暗紅 CTA */
+      --amaranth-d: #5A0118;   /* 深暗紅（hover / 陰影） */
+      --onyx:       #0F0E0E;   /* 近黑文字 */
+      --text:       #0F0E0E;
+      --text-sub:   #3D2235;   /* 深紫調副文字 */
+      --text-muted: #8B7A86;   /* 紫灰調淡文字 */
+      --cta:        #7B0828;
+
+      --r-card:   22px;
+      --r-btn:    50px;
+      --r-opt:    16px;
+
+      --border:   2px solid rgba(82,43,71,.22);
+
+      /* Claymorphism shadows — 紫調 */
+      --sh-card:
+        0 5px 0 rgba(82,43,71,.18),
+        0 10px 30px rgba(82,43,71,.08),
+        inset 0 1.5px 3px rgba(255,255,255,.75),
+        inset 0 -1px 3px rgba(82,43,71,.05);
+
+      --sh-btn:
+        0 6px 0 rgba(90,1,24,.50),
+        0 8px 22px rgba(123,8,40,.28);
+
+      --sh-btn-press:
+        0 2px 0 rgba(90,1,24,.45),
+        0 3px 8px rgba(123,8,40,.15);
+
+      --sh-opt:
+        0 3px 0 rgba(82,43,71,.12),
+        0 5px 14px rgba(82,43,71,.06),
+        inset 0 1px 2px rgba(255,255,255,.8);
+
+      --sh-opt-sel:
+        0 4px 0 rgba(82,43,71,.22),
+        0 8px 22px rgba(82,43,71,.12),
+        inset 0 1px 2px rgba(255,255,255,.8);
+    }
+
+    /* ============================================================
+       RESET & BASE
+       ============================================================ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      /* Prevent iOS font size adjustment */
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'Noto Sans TC', sans-serif;
+      background: var(--snow);
+      color: var(--text);
+      min-height: 100dvh;           /* dynamic viewport height on mobile */
+      overflow-x: hidden;
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* ============================================================
+       BACKGROUND BLOBS — CSS only, no JS on mobile
+       ============================================================ */
+    .bg-deco {
+      position: fixed; inset: 0;
+      pointer-events: none; overflow: hidden; z-index: 0;
+    }
+    .blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(60px); opacity: .18;
+    }
+    .blob-1 {
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, #6B3860, #522B47);
+      top: -80px; right: -80px;
+    }
+    .blob-2 {
+      width: 220px; height: 220px;
+      background: radial-gradient(circle, #8DAA9D, #522B47);
+      bottom: -60px; left: -60px;
+    }
+
+    /* ============================================================
+       APP SHELL
+       ============================================================ */
+    .app {
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; align-items: center;
+      /* bottom padding = sticky CTA height + safe-area */
+      padding: 24px 18px calc(88px + env(safe-area-inset-bottom));
+      min-height: 100dvh;
+    }
+
+    .quiz-wrap { width: 100%; max-width: 440px; }
+
+    /* ============================================================
+       BRAND BADGE
+       ============================================================ */
+    .brand-badge {
+      display: flex; align-items: center; gap: 9px;
+      margin-bottom: 20px;
+      padding: 9px 18px;
+      background: var(--purple);
+      border: 1.5px solid rgba(141,170,157,.45); border-radius: 50px;
+      box-shadow: 0 4px 14px rgba(82,43,71,.30),
+                  inset 0 1px 0 rgba(141,170,157,.15);
+      width: fit-content;
+    }
+    .badge-label {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 13px; font-weight: 600;
+      color: var(--teal-pale); letter-spacing: .06em;
+    }
+
+    /* ============================================================
+       PROGRESS BAR
+       ============================================================ */
+    .progress-wrap { margin-bottom: 20px; display: none; }
+    .progress-wrap.show { display: block; }
+    .progress-meta {
+      display: flex; justify-content: space-between;
+      font-size: 12px; color: var(--text-muted); margin-bottom: 6px;
+    }
+    .progress-track {
+      height: 7px; background: var(--purple-pale);
+      border-radius: 50px; border: 1.5px solid rgba(82,43,71,.18);
+      overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,.05);
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--purple-mid), var(--amaranth));
+      border-radius: 50px; width: 0%;
+      transition: width .4s cubic-bezier(.34,1.56,.64,1);
+    }
+
+    /* ============================================================
+       SCREENS
+       ============================================================ */
+    .screen { display: none; opacity: 0; }
+    .screen.active { display: block; }
+
+    /* ============================================================
+       CLAY CARD
+       ============================================================ */
+    .clay-card {
+      background: #fff;
+      border: var(--border);
+      border-radius: var(--r-card);
+      box-shadow: var(--sh-card);
+      padding: 28px 22px;
+      margin-bottom: 14px;
+    }
+
+    /* ============================================================
+       SCREEN 0 — WELCOME
+       ============================================================ */
+    .welcome-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 20px; font-weight: 700;
+      color: var(--text); line-height: 1.55; margin-bottom: 14px;
+    }
+    .welcome-body {
+      font-size: 15px; color: var(--text-sub);
+      line-height: 2.0; margin-bottom: 22px;
+    }
+    .time-chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--text-muted);
+      background: var(--purple-pale); border: var(--border);
+      border-radius: 50px; padding: 5px 14px;
+    }
+
+    /* ============================================================
+       BUTTONS — touch-optimised
+       ============================================================ */
+
+    /* Sticky CTA bar at bottom */
+    .sticky-cta {
+      position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+      background: linear-gradient(to top, rgba(251,245,243,1) 65%, rgba(251,245,243,0));
+      padding: 14px 20px calc(14px + env(safe-area-inset-bottom));
+      display: none;
+    }
+    .sticky-cta.show { display: block; }
+
+    .btn-primary {
+      display: block; width: 100%;
+      padding: 17px 24px;
+      background: linear-gradient(135deg, var(--amaranth-d), var(--amaranth));
+      color: #fff;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 16px; font-weight: 600; letter-spacing: .04em;
+      text-align: center;
+      border: none; border-radius: var(--r-btn);
+      box-shadow: var(--sh-btn);
+      cursor: pointer;
+      /* Eliminate 300ms tap delay */
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .12s ease, box-shadow .12s ease;
+      position: relative; overflow: hidden;
+      /* minimum touch target */
+      min-height: 52px;
+    }
+    .btn-primary::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.14) 0%, transparent 55%);
+      border-radius: inherit; pointer-events: none;
+    }
+    .btn-primary:active:not(:disabled) {
+      transform: translateY(3px);
+      box-shadow: var(--sh-btn-press);
+    }
+    .btn-primary:disabled { opacity: .44; cursor: not-allowed; }
+
+    .btn-ghost {
+      display: block; width: 100%;
+      padding: 14px 24px;
+      background: var(--purple-pale); color: var(--text-sub);
+      font-size: 14px; text-align: center;
+      border: var(--border); border-radius: var(--r-btn);
+      box-shadow: 0 3px 0 rgba(82,43,71,.12),
+                  0 5px 14px rgba(82,43,71,.06);
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: background .15s, transform .1s;
+      margin-top: 10px; min-height: 48px;
+    }
+    .btn-ghost:active { background: var(--teal-pale); transform: translateY(2px); }
+
+    /* ============================================================
+       SCREEN 1 — CONTRAINDICATION
+       ============================================================ */
+    .screen-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 18px; font-weight: 700;
+      color: var(--text); line-height: 1.55; margin-bottom: 7px;
+    }
+    .screen-sub {
+      font-size: 14px; color: var(--text-muted);
+      line-height: 1.7; margin-bottom: 20px;
+    }
+
+    .chk-row {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 16px 16px;
+      background: var(--snow);
+      border: 2px solid rgba(82,43,71,.16);
+      border-radius: var(--r-opt);
+      box-shadow: var(--sh-opt);
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color .15s, background .15s, box-shadow .15s;
+      margin-bottom: 10px;
+      user-select: none;
+      /* min touch target */
+      min-height: 56px;
+    }
+    .chk-row:active, .chk-row.selected {
+      border-color: var(--purple);
+      background: var(--purple-pale);
+      box-shadow: var(--sh-opt-sel);
+    }
+    .chk-box {
+      flex-shrink: 0; width: 22px; height: 22px;
+      border: 2.5px solid rgba(82,43,71,.38);
+      border-radius: 7px; background: #fff;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .15s; margin-top: 2px;
+    }
+    .chk-row.selected .chk-box { background: var(--purple); border-color: var(--purple); }
+    .chk-tick { opacity: 0; transition: opacity .12s; }
+    .chk-row.selected .chk-tick { opacity: 1; }
+    .chk-label { font-size: 15px; color: var(--text); line-height: 1.65; }
+
+    /* ============================================================
+       SCREEN 2–6 — QUESTIONS
+       ============================================================ */
+    .q-num {
+      font-size: 12px; color: var(--text-muted);
+      letter-spacing: .1em; margin-bottom: 10px;
+    }
+    .q-text {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 19px; font-weight: 600;
+      color: var(--text); line-height: 1.6; margin-bottom: 22px;
+    }
+    .q-hint {
+      display: block;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 12px; font-weight: 400;
+      color: var(--text-muted); margin-top: 6px;
+      letter-spacing: .01em;
+    }
+
+    .opt-btn {
+      display: block; width: 100%;
+      padding: 17px 18px;
+      background: #fff;
+      border: 2px solid rgba(82,43,71,.20);
+      border-radius: var(--r-opt);
+      box-shadow: var(--sh-opt);
+      cursor: pointer; text-align: left;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 15px; color: var(--text); line-height: 1.6;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: border-color .12s, background .12s, box-shadow .12s, transform .12s;
+      margin-bottom: 10px; position: relative;
+      min-height: 54px;
+    }
+    .opt-btn:active {
+      transform: scale(.98);
+      border-color: var(--teal);
+      background: var(--purple-pale);
+    }
+    .opt-btn.picked {
+      border-color: var(--purple);
+      background: linear-gradient(135deg, var(--purple-pale), #E8D5E4);
+      box-shadow: var(--sh-opt-sel);
+    }
+    .opt-btn.picked::after {
+      content: '';
+      position: absolute; right: 16px; top: 50%;
+      transform: translateY(-50%);
+      width: 8px; height: 8px;
+      background: var(--teal); border-radius: 50%;
+      box-shadow: 0 0 0 3px rgba(141,170,157,.30);
+    }
+    .opt-inner { display: flex; align-items: center; gap: 11px; }
+    .opt-dot {
+      flex-shrink: 0; width: 7px; height: 7px;
+      border-radius: 50%; background: rgba(82,43,71,.28);
+      transition: background .12s;
+    }
+    .opt-btn.picked .opt-dot { background: var(--teal); }
+
+    /* ============================================================
+       RESULT SCREEN
+       ============================================================ */
+    .result-top { text-align: center; margin-bottom: 20px; }
+
+    .result-icon-wrap {
+      width: 72px; height: 72px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 16px;
+      box-shadow: 0 7px 0 rgba(82,43,71,.22), 0 14px 30px rgba(82,43,71,.14);
+    }
+    .result-icon-wrap.hi  { background: linear-gradient(135deg, var(--amaranth-d), var(--amaranth)); }
+    .result-icon-wrap.mid { background: linear-gradient(135deg, var(--purple), var(--purple-mid)); }
+    .result-icon-wrap.low { background: linear-gradient(135deg, #6B5464, #8B7080); }
+    .result-icon-wrap.ask { background: linear-gradient(135deg, #4A5568, #718096); }
+
+    .result-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 10px;
+    }
+    .result-desc { font-size: 14px; color: var(--text-sub); line-height: 1.95; }
+
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(82,43,71,.22), transparent);
+      margin: 20px 0;
+    }
+
+    /* Ingredient cards */
+    .ing-cards { display: flex; flex-direction: column; gap: 11px; }
+    .ing-card {
+      display: flex; gap: 13px; align-items: flex-start;
+      background: #fff; border: var(--border); border-radius: 16px;
+      padding: 16px 18px; box-shadow: var(--sh-opt);
+      opacity: 0; transform: translateY(16px);
+    }
+    .ing-icon {
+      flex-shrink: 0; width: 38px; height: 38px; border-radius: 11px;
+      background: var(--teal-pale);
+      border: 1.5px solid rgba(141,170,157,.35);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ing-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 13px; font-weight: 600; color: var(--purple); margin-bottom: 4px;
+    }
+    .ing-text { font-size: 13px; color: var(--text-sub); line-height: 1.75; }
+    .ing-tag {
+      display: inline-block;
+      font-size: 11px; color: var(--teal);
+      background: var(--teal-pale);
+      border: 1px solid rgba(141,170,157,.35);
+      border-radius: 50px; padding: 2px 10px; margin-top: 6px;
+    }
+
+    /* CTA */
+    .cta-note {
+      text-align: center; font-size: 13px;
+      color: var(--text-muted); line-height: 1.7; margin-top: 10px;
+    }
+    .consult-box {
+      background: var(--purple-pale); border: var(--border);
+      border-radius: 16px; padding: 18px;
+      margin: 16px 0; box-shadow: var(--sh-opt);
+    }
+    .consult-box p { font-size: 14px; color: var(--text-sub); line-height: 1.85; }
+
+    /* Back link */
+    .back-link {
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      font-size: 13px; color: var(--text-muted);
+      text-decoration: none; margin-top: 20px;
+      min-height: 44px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .back-link:active { color: var(--purple); }
+
+    /* ============================================================
+       HERO IMAGE (welcome screen)
+       ============================================================ */
+    .welcome-card {
+      padding: 0;           /* remove card padding — image bleeds edge to edge */
+      overflow: hidden;
+    }
+    .hero-wrap {
+      width: 100%;
+      border-radius: var(--r-card) var(--r-card) 0 0;
+      overflow: hidden;
+      /* subtle vignette at bottom so text reads cleanly */
+      position: relative;
+    }
+    /* 不加遮罩：圖片本身底部是深色，自然過渡到白色卡片 */
+    .hero-img {
+      display: block; width: 100%; height: auto;
+      /* show the top (headline) and middle (tiger + product) */
+      object-fit: cover;
+    }
+    .welcome-inner {
+      padding: 4px 22px 24px;
+      text-align: center;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      font-size: 11px; color: var(--text-muted);
+      text-align: center; line-height: 1.7;
+      margin-top: 12px; opacity: .8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="bg-deco" aria-hidden="true">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+</div>
+
+<div class="app">
+  <div class="quiz-wrap">
+
+    <!-- Brand Badge -->
+    <div class="brand-badge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#E8C97A" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M12 22s-8-4.5-8-11.8A8 8 0 0112 2a8 8 0 018 8.2c0 7.3-8 11.8-8 11.8z"/>
+        <circle cx="12" cy="10" r="3"/>
+      </svg>
+      <span class="badge-label">男性保健自我評估</span>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-meta">
+        <span id="pLabel">問題 1 / 5</span>
+        <span id="pPct">20%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 0 — WELCOME ===== -->
+    <div class="screen active" id="sc-welcome">
+      <div class="clay-card welcome-card">
+        <!-- Hero poster -->
+        <div class="hero-wrap">
+          <img
+            src="hero.webp"
+            alt="優go鼎 — 男人的底氣，從內開始"
+            class="hero-img"
+            width="540" height="680"
+            loading="eager"
+            decoding="async"
+          >
+        </div>
+        <!-- Text below poster -->
+        <div class="welcome-inner">
+          <h1 class="welcome-title">幾個問題<br>了解你現在的狀態</h1>
+          <p class="welcome-body">
+            人到了一定年紀，身體的訊號會越來越明顯。<br>
+            花 1 分鐘誠實回答幾個問題，<br>
+            看看優go鼎的成分適不適合你。
+          </p>
+          <div class="time-chip" aria-label="預計作答時間">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9C8450" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+            </svg>
+            約 1 分鐘完成
+          </div>
+        </div>
+      </div>
+      <p class="disclaimer">本測驗僅供參考，不構成醫療診斷或購買建議。</p>
+    </div>
+
+    <!-- ===== SCREEN 1 — CONTRAINDICATION ===== -->
+    <div class="screen" id="sc-contra">
+      <div class="clay-card">
+        <h2 class="screen-title">開始之前，先確認一下</h2>
+        <p class="screen-sub">請勾選所有目前符合你狀況的選項</p>
+
+        <div class="chk-row" id="chk-blood" onclick="toggleChk(this,'blood')" role="checkbox" aria-checked="false" tabindex="0">
+          <div class="chk-box" aria-hidden="true">
+            <svg class="chk-tick" width="12" height="10" viewBox="0 0 12 10" fill="none">
+              <path d="M1 5l3.5 3.5L11 1" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="chk-label">我目前有在服用<strong>抗凝血劑</strong>（例如華法林、阿斯匹靈等）</span>
+        </div>
+
+        <div class="chk-row" id="chk-age" onclick="toggleChk(this,'age')" role="checkbox" aria-checked="false" tabindex="0">
+          <div class="chk-box" aria-hidden="true">
+            <svg class="chk-tick" width="12" height="10" viewBox="0 0 12 10" fill="none">
+              <path d="M1 5l3.5 3.5L11 1" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="chk-label">我未滿 18 歲，或目前正在懷孕／哺乳</span>
+        </div>
+
+        <div class="chk-row" id="chk-none" onclick="pickNone()" role="checkbox" aria-checked="false" tabindex="0">
+          <div class="chk-box" aria-hidden="true">
+            <svg class="chk-tick" width="12" height="10" viewBox="0 0 12 10" fill="none">
+              <path d="M1 5l3.5 3.5L11 1" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="chk-label">以上都<strong>不符合</strong>我的狀況</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN 2 — QUESTIONS ===== -->
+    <div class="screen" id="sc-quiz">
+      <div class="clay-card" id="qCard">
+        <p class="q-num" id="qNum">問題 1 / 5</p>
+        <h2 class="q-text" id="qText"></h2>
+        <div id="qOpts"></div>
+      </div>
+    </div>
+
+    <!-- ===== SCREEN — RESULT ===== -->
+    <div class="screen" id="sc-result">
+      <div class="clay-card">
+        <div class="result-top">
+          <div class="result-icon-wrap" id="rIcon"></div>
+          <h2 class="result-title" id="rTitle"></h2>
+          <p class="result-desc"  id="rDesc"></p>
+        </div>
+        <div class="divider"></div>
+        <div class="ing-cards" id="ingCards"></div>
+        <div id="rExtraCTA"></div>
+        <p class="disclaimer" id="rDisc"></p>
+      </div>
+      <a class="back-link" href="../index.html">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        回到產品目錄
+      </a>
+    </div>
+
+  </div><!-- .quiz-wrap -->
+</div><!-- .app -->
+
+<!-- Sticky CTA — shown when a screen has a primary action -->
+<div class="sticky-cta" id="stickyCTA">
+  <button class="btn-primary" id="mainCTA" onclick="handleCTA()">開始評估</button>
+</div>
+
+<!-- GSAP — core only, no ScrollTrigger needed -->
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<script>
+  /* ============================================================
+     STATE
+     ============================================================ */
+  const S = {
+    chk: { blood: false, age: false, none: false },
+    qIdx: 0,
+    answers: [],
+    tags: {},
+    screen: 'welcome',   // welcome | contra | quiz | result
+    picked: false,       // current question answered?
+  };
+
+  /* ============================================================
+     CTA ROUTING — one sticky button, changes role per screen
+     ============================================================ */
+  const CTA_MAP = {
+    welcome: { label: '開始評估',  show: true  },
+    contra:  { label: '繼續',      show: false }, // enabled after selection
+    quiz:    { label: '下一題',    show: false },
+    result:  { label: '洽詢櫃檯了解購買方式', show: false },
+  };
+
+  function showCTA(label, enabled) {
+    const bar = document.getElementById('stickyCTA');
+    const btn = document.getElementById('mainCTA');
+    bar.classList.add('show');
+    btn.textContent = label;
+    btn.disabled = !enabled;
+  }
+  function hideCTA() {
+    document.getElementById('stickyCTA').classList.remove('show');
+  }
+
+  function handleCTA() {
+    if (S.screen === 'welcome') {
+      goScreen('contra');
+    } else if (S.screen === 'contra') {
+      handleContra();
+    } else if (S.screen === 'quiz') {
+      nextQ();
+    } else if (S.screen === 'result') {
+      // result CTA — no-op placeholder, clinic handles purchase
+    }
+  }
+
+  /* ============================================================
+     SCREEN TRANSITIONS (fast — 180ms)
+     ============================================================ */
+  function goScreen(id) {
+    const cur = document.querySelector('.screen.active');
+    const tgt = document.getElementById('sc-' + id);
+    if (!tgt || !cur) return;
+    S.screen = id;
+
+    gsap.to(cur, {
+      opacity: 0, x: -22, duration: .18, ease: 'power2.in',
+      onComplete() {
+        cur.classList.remove('active');
+        cur.style.cssText = '';
+
+        tgt.style.display = 'block';
+        tgt.classList.add('active');
+        gsap.fromTo(tgt,
+          { opacity: 0, x: 22 },
+          { opacity: 1, x: 0, duration: .22, ease: 'power2.out' }
+        );
+
+        document.getElementById('progressWrap')
+          .classList.toggle('show', id === 'quiz');
+
+        window.scrollTo({ top: 0, behavior: 'instant' });
+
+        // Configure sticky CTA per screen
+        if (id === 'welcome') showCTA('開始評估', true);
+        if (id === 'contra')  showCTA('繼續', false);
+        if (id === 'quiz')    showCTA(S.qIdx === QUESTIONS.length - 1 ? '查看結果' : '下一題', false);
+        if (id === 'result') {
+          // CTA varies — set inside buildResult
+        }
+      }
+    });
+  }
+
+  /* ============================================================
+     ENTRY
+     ============================================================ */
+  window.addEventListener('DOMContentLoaded', () => {
+    const w = document.getElementById('sc-welcome');
+    w.style.display = 'block';
+    gsap.fromTo(w, { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: .4, ease: 'power2.out' });
+    showCTA('開始評估', true);
+  });
+
+  /* ============================================================
+     CONTRAINDICATION
+     ============================================================ */
+  function toggleChk(el, key) {
+    // deselect "none" when picking condition
+    const noneEl = document.getElementById('chk-none');
+    noneEl.classList.remove('selected');
+    noneEl.setAttribute('aria-checked', 'false');
+    S.chk.none = false;
+
+    el.classList.toggle('selected');
+    const checked = el.classList.contains('selected');
+    el.setAttribute('aria-checked', String(checked));
+    S.chk[key] = checked;
+    syncContraBtn();
+  }
+
+  function pickNone() {
+    ['blood','age'].forEach(k => {
+      const el = document.getElementById('chk-' + k);
+      el.classList.remove('selected');
+      el.setAttribute('aria-checked', 'false');
+      S.chk[k] = false;
+    });
+    const noneEl = document.getElementById('chk-none');
+    noneEl.classList.toggle('selected');
+    const checked = noneEl.classList.contains('selected');
+    noneEl.setAttribute('aria-checked', String(checked));
+    S.chk.none = checked;
+    syncContraBtn();
+  }
+
+  function syncContraBtn() {
+    const ok = S.chk.blood || S.chk.age || S.chk.none;
+    showCTA('繼續', ok);
+  }
+
+  function handleContra() {
+    if (S.chk.blood || S.chk.age) {
+      buildResult('ask');
+      goScreen('result');
+    } else {
+      S.qIdx = 0; S.answers = []; S.tags = {};
+      renderQ(0);
+      goScreen('quiz');
+    }
+  }
+
+  /* ============================================================
+     QUIZ DATA
+     ============================================================ */
+  const QUESTIONS = [
+    {
+      text: '親密關係中，勃起的硬度有比以前差嗎？',
+      hint: '不需要精確，大概的感覺就好',
+      opts: [
+        { text: '明顯變差，有時候沒辦法維持到最後',  score: 2, tag: 'erection' },
+        { text: '偶爾會，但不是每次都這樣',           score: 1, tag: 'erection' },
+        { text: '目前這方面還好',                     score: 0, tag: null       },
+      ]
+    },
+    {
+      text: '在持久度這件事上，有讓你感到困擾嗎？',
+      hint: '對自己誠實就好，這裡沒有標準答案',
+      opts: [
+        { text: '常常比自己預期結束得更早',            score: 2, tag: 'stamina'  },
+        { text: '偶爾會在意，但還不到嚴重',            score: 1, tag: 'stamina'  },
+        { text: '目前沒有這方面的困擾',                score: 0, tag: null       },
+      ]
+    },
+    {
+      text: '最近對親密關係的興趣和慾望，有比以前低嗎？',
+      hint: '壓力、睡眠、年紀都可能有影響',
+      opts: [
+        { text: '明顯比以前低，有時候根本提不起興趣',  score: 2, tag: 'libido'   },
+        { text: '有一點點，可能跟壓力或睡眠有關',       score: 1, tag: 'libido'   },
+        { text: '這方面還算正常',                       score: 0, tag: null       },
+      ]
+    },
+    {
+      text: '整體活力和精神，跟幾年前相比怎麼樣？',
+      hint: '包含工作、運動後的恢復感',
+      opts: [
+        { text: '明顯不如以前，整個人比較沒勁',        score: 2, tag: 'vitality' },
+        { text: '有一點下滑，但還在可接受範圍',         score: 1, tag: 'vitality' },
+        { text: '狀態還不錯，跟以前差不多',             score: 0, tag: null       },
+      ]
+    },
+    {
+      text: '你目前的年齡層是？',
+      hint: '這個產品的成分對不同年齡層的效果有差異',
+      opts: [
+        { text: '40 歲以上',  score: 2, tag: 'age' },
+        { text: '30–39 歲',   score: 1, tag: 'age' },
+        { text: '30 歲以下',  score: 0, tag: null  },
+      ]
+    },
+  ];
+
+  function renderQ(idx) {
+    S.qIdx = idx; S.picked = false;
+    const q = QUESTIONS[idx];
+
+    document.getElementById('qNum').textContent  = `問題 ${idx + 1} / ${QUESTIONS.length}`;
+    document.getElementById('qText').innerHTML =
+      q.text + (q.hint ? `<span class="q-hint">${q.hint}</span>` : '');
+
+    const container = document.getElementById('qOpts');
+    container.innerHTML = '';
+    q.opts.forEach((opt, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'opt-btn';
+      btn.setAttribute('aria-label', opt.text);
+      btn.innerHTML = `<span class="opt-inner"><span class="opt-dot" aria-hidden="true"></span>${opt.text}</span>`;
+      btn.onclick = () => pickOpt(i, btn, opt);
+      container.appendChild(btn);
+    });
+
+    const isLast = idx === QUESTIONS.length - 1;
+    showCTA(isLast ? '查看結果' : '下一題', false);
+    updateProgress(idx);
+
+    gsap.fromTo('.opt-btn',
+      { opacity: 0, y: 12 },
+      { opacity: 1, y: 0, duration: .25, stagger: .06, ease: 'power2.out', delay: .06 }
+    );
+  }
+
+  function pickOpt(i, btn, opt) {
+    document.querySelectorAll('.opt-btn').forEach(b => b.classList.remove('picked'));
+    btn.classList.add('picked');
+
+    // Subtle bounce via CSS active + tiny GSAP pulse
+    gsap.fromTo(btn, { scale: .97 }, { scale: 1, duration: .2, ease: 'elastic.out(1,.5)' });
+
+    S.answers[S.qIdx] = opt.score;
+    if (opt.tag) S.tags[opt.tag] = (S.tags[opt.tag] || 0) + opt.score;
+    S.picked = true;
+
+    const isLast = S.qIdx === QUESTIONS.length - 1;
+    showCTA(isLast ? '查看結果' : '下一題', true);
+  }
+
+  function nextQ() {
+    if (!S.picked) return;
+    const next = S.qIdx + 1;
+    if (next < QUESTIONS.length) {
+      gsap.to('#qCard', {
+        opacity: 0, x: -16, duration: .16, ease: 'power2.in',
+        onComplete() {
+          renderQ(next);
+          gsap.fromTo('#qCard',
+            { opacity: 0, x: 16 },
+            { opacity: 1, x: 0, duration: .2, ease: 'power2.out' }
+          );
+        }
+      });
+    } else {
+      const total = S.answers.reduce((a, b) => a + (b || 0), 0);
+      buildResult(total >= 7 ? 'hi' : total >= 3 ? 'mid' : 'low');
+      goScreen('result');
+    }
+  }
+
+  function updateProgress(idx) {
+    const pct = Math.round(((idx + 1) / QUESTIONS.length) * 100);
+    document.getElementById('pLabel').textContent = `問題 ${idx + 1} / ${QUESTIONS.length}`;
+    document.getElementById('pPct').textContent   = pct + '%';
+    document.getElementById('progressFill').style.width = pct + '%';
+  }
+
+  /* ============================================================
+     RESULT
+     ============================================================ */
+  const ING = {
+    erection: {
+      name: 'L-精胺酸',
+      text: 'L-精胺酸是一氧化氮（NO）的前驅物。一氧化氮能促進血管舒張、改善生殖器官血流，多項研究指出對勃起硬度有輔助效果，是目前研究最多的男性機能保健成分之一。',
+      tag: '勃起血流支持',
+      svg: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#9A7128" stroke-width="1.8" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>`
+    },
+    stamina: {
+      name: '蛹蟲草萃取物',
+      text: '蛹蟲草含有蟲草素，研究顯示有助於促進細胞能量（ATP）合成，支持體力與耐力表現。部分研究也指出其可能有助於維持男性正常睪固酮水平，與持久度表現有間接關聯。',
+      tag: '體力 · 耐力支持',
+      svg: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#9A7128" stroke-width="1.8" stroke-linecap="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>`
+    },
+    libido: {
+      name: '瑪卡萃取物',
+      text: '瑪卡是來自秘魯高地的植物，多項研究顯示有助於提升男性性慾與整體活力感。一項為期 12 週的隨機對照試驗指出，補充瑪卡萃取物的男性在性慾評分上顯著優於安慰劑組。',
+      tag: '性慾 · 男性活力',
+      svg: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#9A7128" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`
+    },
+    vitality: {
+      name: '瑪卡萃取物 × L-精胺酸',
+      text: '瑪卡支持整體活力與情緒狀態；L-精胺酸促進一氧化氮合成、改善血流。兩者搭配，從「想不想」到「做不做得到」兩個面向同時支持。',
+      tag: '活力 · 機能雙效',
+      svg: `<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#9A7128" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+    },
+  };
+
+  const ICONS = {
+    hi:  `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+    mid: `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>`,
+    low: `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></svg>`,
+    ask: `<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 11.5 19.79 19.79 0 01.08 2.9 2 2 0 012.07 1h3a2 2 0 012 1.72c.13 1 .39 1.97.76 2.9a2 2 0 01-.45 2.11L5.91 8.5A16 16 0 0015.5 18.09l.77-.77a2 2 0 012.11-.45c.93.37 1.9.63 2.9.76A2 2 0 0122 16.92z"/></svg>`,
+  };
+
+  const RESULT_COPY = {
+    hi: {
+      cls: 'hi',
+      title: '你描述的狀況，正是這個產品在針對的',
+      desc:  '根據你的回答，優go鼎的成分組合與你目前的困擾有相當高的對應關係。以下是與你情況最相關的成分說明：',
+      disc:  '本測驗僅供參考，不構成醫療診斷。成分效果因個人體質而異，請依自身狀況評估。',
+      ctaLabel: '洽詢櫃檯了解購買方式',
+      note:  '帶著這個頁面告知現場人員，說明你想了解優go鼎即可。',
+    },
+    mid: {
+      cls: 'mid',
+      title: '有部分符合，值得進一步了解',
+      desc:  '你的回答顯示某些面向與產品成分有所對應。不一定要有很明顯的困擾才適合——了解成分、先做功課，也是一種方式：',
+      disc:  '本測驗僅供參考，不構成醫療診斷。成分效果因個人體質而異。',
+      ctaLabel: '洽詢櫃檯了解購買方式',
+      note:  '有任何問題，可以直接詢問現場人員。',
+    },
+    low: {
+      cls: 'low',
+      title: '目前看起來狀態還不錯',
+      desc:  '根據你的回答，你現在這方面的狀態還算穩定。如果之後有需要，或是想提前保養，歡迎再來評估，也可以直接詢問現場人員。',
+      disc:  '本測驗僅供參考，不構成醫療診斷。',
+      ctaLabel: null,
+      note:  null,
+    },
+    ask: {
+      cls: 'ask',
+      title: '建議先和醫師確認一下',
+      desc:  '根據你目前的狀況，建議在購買前進診間和醫師聊聊，讓醫師幫你評估是否適合。',
+      disc:  '本測驗僅供參考，不構成醫療診斷。',
+      ctaLabel: null,
+      note:  null,
+    },
+  };
+
+  function buildResult(level) {
+    const r = RESULT_COPY[level];
+
+    document.getElementById('rIcon').className = `result-icon-wrap ${r.cls}`;
+    document.getElementById('rIcon').innerHTML = ICONS[level] || ICONS.ask;
+    document.getElementById('rTitle').textContent = r.title;
+    document.getElementById('rDesc').textContent  = r.desc;
+    document.getElementById('rDisc').textContent  = r.disc;
+
+    // Extra CTA below ingredient cards (consult box for 'ask')
+    const extraCTA = document.getElementById('rExtraCTA');
+    if (level === 'ask') {
+      extraCTA.innerHTML = `<div class="consult-box"><p>這不代表你一定不適合，而是讓醫師幫你確認會更安心。<br>可以帶著這個頁面，讓醫師了解你想詢問優go鼎。</p></div>`;
+    } else {
+      extraCTA.innerHTML = '';
+    }
+
+    // Ingredient cards
+    const container = document.getElementById('ingCards');
+    container.innerHTML = '';
+    let keys = [];
+    if (level !== 'ask') {
+      if ((S.tags.erection || 0) >= 1) keys.push('erection');
+      if ((S.tags.stamina  || 0) >= 1) keys.push('stamina');
+      if ((S.tags.libido   || 0) >= 1) keys.push('libido');
+      if ((S.tags.vitality || 0) >= 1 && !keys.includes('libido') && !keys.includes('erection')) keys.push('vitality');
+      if (keys.length === 0) keys = ['erection', 'libido', 'stamina'];
+    }
+    keys.forEach(k => {
+      const d = ING[k];
+      const card = document.createElement('div');
+      card.className = 'ing-card';
+      card.innerHTML = `<div class="ing-icon" aria-hidden="true">${d.svg}</div>
+        <div><div class="ing-name">${d.name}</div>
+        <div class="ing-text">${d.text}</div>
+        <span class="ing-tag">${d.tag}</span></div>`;
+      container.appendChild(card);
+    });
+
+    // Sticky CTA
+    if (r.ctaLabel) {
+      showCTA(r.ctaLabel, true);
+      // After screen transition, add note below sticky
+      setTimeout(() => {
+        if (r.note) {
+          const note = document.createElement('p');
+          note.className = 'cta-note';
+          note.textContent = r.note;
+          document.getElementById('stickyCTA').appendChild(note);
+        }
+      }, 300);
+    } else {
+      hideCTA();
+    }
+
+    // Animate ingredient cards
+    setTimeout(() => {
+      gsap.to('.ing-card', {
+        opacity: 1, y: 0, duration: .3,
+        stagger: .08, ease: 'power2.out', delay: .25
+      });
+    }, 300);
+  }
+</script>
+</body>
+</html>

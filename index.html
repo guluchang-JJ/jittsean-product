@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>健康自測中心</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&family=Cormorant:ital,wght@0,500;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      /* ── Coolors palette: FEC0AA / EC4E20 / 84732B / 574F2A / 1C3A13 ── */
+      --blush:       #FEC0AA;
+      --blush-pale:  #FFF6F2;
+      --paprika:     #EC4E20;
+      --paprika-d:   #C43810;
+      --olive:       #84732B;
+      --olive-pale:  #F2EDD8;
+      --khaki:       #574F2A;
+      --forest:      #1C3A13;
+      --forest-mid:  #2E5A1E;
+      --forest-pale: #E4EEE0;
+
+      --text:        #1C3A13;
+      --text-sub:    #3A3018;
+      --text-muted:  #7A7058;
+
+      --r-card: 24px;
+      --r-btn:  60px;
+      --r-chip: 50px;
+
+      --sh-card:
+        0 5px 0 rgba(28,58,19,.13),
+        0 10px 28px rgba(28,58,19,.08),
+        inset 0 1.5px 3px rgba(255,255,255,.85),
+        inset 0 -1px 3px rgba(28,58,19,.04);
+
+      --sh-btn:
+        0 5px 0 rgba(150,40,10,.48),
+        0 8px 20px rgba(236,78,32,.30);
+
+      --border: 2px solid rgba(28,58,19,.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--blush-pale);
+      font-family: 'Noto Sans TC', sans-serif;
+      color: var(--text);
+      min-height: 100dvh;
+      padding: 0 0 env(safe-area-inset-bottom);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ============================================================
+       BACKGROUND BLOBS
+       ============================================================ */
+    .blob-bg {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .blob {
+      position: absolute; border-radius: 50%; filter: blur(56px); opacity: .22;
+    }
+    .blob-1 {
+      width: 340px; height: 340px;
+      background: radial-gradient(circle, #EC4E20 0%, #C43810 100%);
+      top: -80px; right: -60px;
+    }
+    .blob-2 {
+      width: 260px; height: 260px;
+      background: radial-gradient(circle, #2E5A1E 0%, #E4EEE0 100%);
+      bottom: 20%; left: -80px;
+    }
+    .blob-3 {
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, #84732B 0%, #574F2A 100%);
+      bottom: -40px; right: 10%;
+      opacity: .16;
+    }
+
+    /* ============================================================
+       LAYOUT WRAPPER
+       ============================================================ */
+    .page-wrap {
+      position: relative; z-index: 1;
+      max-width: 480px; margin: 0 auto;
+      padding: 0 20px 60px;
+    }
+
+    /* ============================================================
+       HEADER
+       ============================================================ */
+    .site-header {
+      padding: 52px 0 32px;
+      text-align: center;
+    }
+    .header-eyebrow {
+      font-family: 'Cormorant', serif;
+      font-style: italic;
+      font-size: 14px; color: var(--olive);
+      letter-spacing: .12em; margin-bottom: 10px;
+      opacity: 0;
+    }
+    .header-title {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 26px; font-weight: 700;
+      color: var(--forest); line-height: 1.5;
+      margin-bottom: 10px;
+      opacity: 0;
+    }
+    .header-sub {
+      font-size: 14px; color: var(--text-muted);
+      line-height: 1.85;
+      opacity: 0;
+    }
+    .header-divider {
+      width: 44px; height: 3px;
+      background: linear-gradient(90deg, var(--paprika), var(--forest));
+      border-radius: 2px; margin: 16px auto 0;
+      opacity: 0;
+    }
+
+    /* ============================================================
+       PRODUCT CARDS
+       ============================================================ */
+    .section-label {
+      font-size: 11px; font-weight: 600;
+      color: var(--text-muted); letter-spacing: .14em;
+      text-transform: uppercase; margin-bottom: 14px;
+      opacity: 0;
+    }
+
+    .product-card {
+      background: #fff;
+      border: var(--border);
+      border-radius: var(--r-card);
+      box-shadow: var(--sh-card);
+      padding: 22px 20px 20px;
+      margin-bottom: 14px;
+      opacity: 0; transform: translateY(20px);
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .18s ease, box-shadow .18s ease;
+      text-decoration: none; display: block; color: inherit;
+    }
+    .product-card:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 2px 0 rgba(82,43,71,.12),
+        0 4px 12px rgba(82,43,71,.06),
+        inset 0 1.5px 3px rgba(255,255,255,.80);
+    }
+    .product-card.coming-soon {
+      cursor: default; opacity: 0;
+    }
+    .product-card.coming-soon:active {
+      transform: none;
+      box-shadow: var(--sh-card);
+    }
+
+    /* Card header row */
+    .card-head {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 12px;
+      margin-bottom: 14px;
+    }
+    .card-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 4px 12px;
+      border-radius: var(--r-chip); font-size: 11px; font-weight: 600;
+      letter-spacing: .05em; flex-shrink: 0;
+    }
+    .card-badge.active {
+      background: var(--forest);
+      color: var(--forest-pale);
+    }
+    .card-badge.soon {
+      background: rgba(28,58,19,.07);
+      color: var(--text-muted);
+      border: 1.5px solid rgba(28,58,19,.14);
+    }
+
+    /* Card icon */
+    .card-icon {
+      width: 48px; height: 48px; border-radius: 14px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card-icon.men {
+      background: linear-gradient(135deg, var(--paprika-d), var(--paprika));
+      box-shadow: 0 4px 0 rgba(150,40,10,.30), 0 6px 16px rgba(236,78,32,.22);
+    }
+    .card-icon.rose {
+      background: linear-gradient(135deg, #9E2E3E, #C14953);
+      box-shadow: 0 4px 0 rgba(120,28,42,.28), 0 6px 16px rgba(193,73,83,.20);
+    }
+
+    .card-body { flex: 1; min-width: 0; }
+    .card-name {
+      font-family: 'Noto Serif TC', serif;
+      font-size: 17px; font-weight: 700;
+      color: var(--text); line-height: 1.4; margin-bottom: 4px;
+    }
+    .card-tagline {
+      font-size: 13px; color: var(--text-sub);
+      line-height: 1.6; margin-bottom: 12px;
+    }
+
+    /* Chips */
+    .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 18px; }
+    .chip {
+      font-size: 11px; padding: 3px 10px;
+      border-radius: var(--r-chip);
+      font-weight: 500; letter-spacing: .02em;
+    }
+    .chip.teal {
+      background: var(--forest-pale); color: var(--forest-mid);
+      border: 1px solid rgba(28,58,19,.22);
+    }
+    .chip.purple {
+      background: var(--olive-pale); color: var(--khaki);
+      border: 1px solid rgba(87,79,42,.22);
+    }
+    .chip.muted {
+      background: rgba(28,58,19,.06); color: var(--text-muted);
+      border: 1px solid rgba(28,58,19,.10);
+    }
+
+    /* CTA button inside card */
+    .card-cta {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; padding: 14px 20px;
+      background: linear-gradient(135deg, var(--paprika-d), var(--paprika));
+      color: #fff;
+      font-family: 'Noto Sans TC', sans-serif;
+      font-size: 15px; font-weight: 600; letter-spacing: .04em;
+      border: none; border-radius: var(--r-btn);
+      box-shadow: var(--sh-btn);
+      cursor: pointer;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: transparent;
+      transition: transform .12s ease, box-shadow .12s ease;
+      position: relative; overflow: hidden;
+      min-height: 50px; text-decoration: none;
+    }
+    .card-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,.13) 0%, transparent 55%);
+      pointer-events: none;
+    }
+    .card-cta:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 rgba(150,40,10,.40), 0 3px 8px rgba(236,78,32,.18);
+    }
+    .card-cta.disabled {
+      background: linear-gradient(135deg, #A8A898, #C0BEA8);
+      box-shadow: 0 3px 0 rgba(28,58,19,.10), 0 5px 14px rgba(28,58,19,.05);
+      cursor: default;
+    }
+
+    /* ============================================================
+       FOOTER
+       ============================================================ */
+    .site-footer {
+      text-align: center;
+      padding-top: 28px;
+      opacity: 0;
+    }
+    .footer-text {
+      font-size: 11px; color: var(--text-muted);
+      line-height: 1.8; opacity: .75;
+    }
+
+    /* ============================================================
+       REDUCED MOTION
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      .header-eyebrow, .header-title, .header-sub, .header-divider,
+      .section-label, .product-card, .site-footer {
+        opacity: 1 !important; transform: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background blobs -->
+  <div class="blob-bg" aria-hidden="true">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+  </div>
+
+  <div class="page-wrap">
+
+    <!-- Header -->
+    <header class="site-header">
+      <p class="header-eyebrow">Wellness Self-Check</p>
+      <h1 class="header-title">找到最適合你的<br>保健選擇</h1>
+      <p class="header-sub">只需 2 分鐘，了解你目前的狀況<br>以及哪個產品可能對你有幫助</p>
+      <div class="header-divider" aria-hidden="true"></div>
+    </header>
+
+    <!-- Product list -->
+    <p class="section-label">目前開放的測驗</p>
+
+    <!-- Product 1: 優go鼎 -->
+    <a href="./yu-go-ding/index.html" class="product-card" aria-label="優go鼎男性活力測驗，開始測驗">
+      <div class="card-head">
+        <div class="card-body">
+          <div class="card-name">優go鼎</div>
+          <div class="card-tagline">男人的底氣，從內在開始找回來</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+          <span class="card-badge active">
+            <svg width="7" height="7" viewBox="0 0 7 7" fill="none" aria-hidden="true">
+              <circle cx="3.5" cy="3.5" r="3.5" fill="#DDE8E4"/>
+            </svg>
+            現正開放
+          </span>
+          <div class="card-icon men" aria-hidden="true">
+            <!-- Male vitality icon -->
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="10" cy="14" r="5"/>
+              <path d="M19 5l-5.5 5.5M14 5h5v5"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="chip-row">
+        <span class="chip purple">男性活力</span>
+        <span class="chip teal">勃起硬度</span>
+        <span class="chip teal">持久度</span>
+        <span class="chip purple">40歲以上</span>
+      </div>
+
+      <div class="card-cta" role="button" aria-label="開始優go鼎測驗">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        開始測驗
+      </div>
+    </a>
+
+    <!-- Product 2: 玫瑰花飲片 -->
+    <a href="./rose-petals/index.html" class="product-card" aria-label="玫瑰花安心飲片測驗，開始測驗">
+      <div class="card-head">
+        <div class="card-body">
+          <div class="card-name">玫瑰花安心飲片</div>
+          <div class="card-tagline">一杯玫瑰花茶，溫柔安放你的情緒</div>
+        </div>
+        <div style="display:flex; flex-direction:column; align-items:flex-end; gap:8px;">
+          <span class="card-badge active">
+            <svg width="7" height="7" viewBox="0 0 7 7" fill="none" aria-hidden="true">
+              <circle cx="3.5" cy="3.5" r="3.5" fill="#E4EEE0"/>
+            </svg>
+            現正開放
+          </span>
+          <div class="card-icon rose" style="filter:none; opacity:1;" aria-hidden="true">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 22V12"/>
+              <path d="M12 12C12 12 7 10 7 5.5a5 5 0 0110 0C17 10 12 12 12 12z"/>
+              <path d="M9 16c0 0 1.5 2 3 2s3-2 3-2"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="chip-row">
+        <span class="chip teal">情緒舒緩</span>
+        <span class="chip purple">無咖啡因</span>
+        <span class="chip teal">日常調養</span>
+        <span class="chip purple">中藥飲片</span>
+      </div>
+
+      <div class="card-cta" role="button" aria-label="開始玫瑰花飲片測驗">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+        開始測驗
+      </div>
+    </a>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <p class="footer-text">
+        本測驗為輔助評估參考，不構成醫療診斷建議。<br>
+        若有特殊疾病或正在服藥，請先諮詢醫師。
+      </p>
+    </footer>
+
+  </div><!-- /page-wrap -->
+
+  <script>
+    // Register ScrollTrigger
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Respect reduced motion
+    const noMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!noMotion) {
+      // Header sequence
+      const tl = gsap.timeline({ defaults: { ease: 'power2.out' } });
+      tl.to('.header-eyebrow',  { opacity: 1, y: 0, duration: .55, delay: .15 })
+        .to('.header-title',    { opacity: 1, y: 0, duration: .55 }, '-=.30')
+        .to('.header-sub',      { opacity: 1, y: 0, duration: .45 }, '-=.25')
+        .to('.header-divider',  { opacity: 1, scaleX: 1, duration: .35, transformOrigin: 'center' }, '-=.20')
+        .to('.section-label',   { opacity: 1, duration: .35 }, '-=.10');
+
+      // Set initial state for header elements
+      gsap.set(['.header-eyebrow', '.header-title', '.header-sub'], { y: 14 });
+      gsap.set('.header-divider', { scaleX: 0, opacity: 0 });
+
+      // Stagger cards
+      gsap.to('.product-card', {
+        opacity: 1, y: 0, duration: .55,
+        ease: 'power2.out',
+        stagger: .14,
+        delay: .65,
+      });
+
+      // Footer
+      gsap.to('.site-footer', {
+        opacity: 1, duration: .45,
+        delay: 1.0,
+      });
+    } else {
+      // Show everything immediately
+      gsap.set(['.header-eyebrow', '.header-title', '.header-sub', '.header-divider',
+                 '.section-label', '.product-card', '.site-footer'], { opacity: 1, y: 0 });
+    }
+  </script>
+</body>
+</html>
