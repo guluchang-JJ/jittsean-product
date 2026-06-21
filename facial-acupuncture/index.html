@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>美顏針自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  --ink:#0D1B1E;
+  --ink-mid:#1E3035;
+  --steel:#7798AB;
+  --steel-pale:#D6E3EC;
+  --tea:#C3DBC5;
+  --tea-pale:#EBF4EC;
+  --beige:#E8DCB9;
+  --beige-pale:#F7F3E8;
+  --frost:#F2CEE6;
+  --frost-pale:#FBF2F8;
+  --white:#FDFCFB;
+  --cta:#0D1B1E;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--beige-pale);
+  color:var(--ink);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── Screens ── */
+.screen{
+  display:none;
+  min-height:100dvh;
+  padding-bottom:calc(88px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress bar ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(119,152,171,.2);
+}
+.progress-bar{
+  height:100%;background:var(--steel);
+  transition:width .4s ease;
+  border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--beige-pale) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--cta);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;
+  cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 rgba(0,0,0,.25),0 10px 20px rgba(0,0,0,.12);
+  transition:transform .12s ease,box-shadow .12s ease;
+  touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.25),0 5px 12px rgba(0,0,0,.1)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid var(--ink);border-radius:20px;
+  cursor:pointer;text-align:center;
+  transition:background .15s;
+  touch-action:manipulation;
+  opacity:.7;
+}
+.btn-ghost:active{background:rgba(13,27,30,.06)}
+
+/* ── Screen 0: Welcome ── */
+#s0{
+  background:linear-gradient(160deg, var(--tea-pale) 0%, var(--beige-pale) 60%, var(--frost-pale) 100%);
+  display:flex;flex-direction:column;
+}
+.hero-img{
+  width:100%;height:260px;object-fit:cover;object-position:center top;
+  border-radius:0 0 32px 32px;
+}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;
+  background:var(--steel);color:#fff;
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--ink);margin-bottom:12px;
+}
+.hero-sub{
+  font-size:15px;line-height:1.9;color:var(--ink-mid);opacity:.8;
+  margin-bottom:24px;
+}
+.hero-card{
+  background:var(--white);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(0,0,0,.1),0 10px 24px rgba(0,0,0,.07);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.8;color:var(--ink-mid);opacity:.85}
+.hero-card strong{color:var(--steel);font-weight:600}
+
+/* ── Screen 1: Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;
+  color:var(--steel);text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--ink-mid);opacity:.75;margin-bottom:28px}
+
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--white);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(0,0,0,.08),0 8px 16px rgba(0,0,0,.05);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  border:2px solid transparent;
+  touch-action:manipulation;
+}
+.check-card.selected{
+  border-color:var(--steel);
+  box-shadow:0 4px 0 rgba(119,152,171,.3),0 8px 16px rgba(119,152,171,.15);
+}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid var(--steel-pale);
+  flex-shrink:0;transition:background .15s,border-color .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.check-card.selected .check-box{background:var(--steel);border-color:var(--steel)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.6;color:var(--ink)}
+
+/* ── Quiz questions ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{
+  font-size:13px;font-weight:600;color:var(--steel);
+  margin-bottom:6px;
+}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--ink-mid);opacity:.7;margin-bottom:28px}
+
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  background:var(--white);border:2px solid transparent;
+  border-radius:20px;padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--ink);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(0,0,0,.08),0 8px 16px rgba(0,0,0,.05);
+  transition:border-color .12s,box-shadow .12s,transform .1s;
+  touch-action:manipulation;display:flex;align-items:center;gap:12px;
+}
+.option-btn:active{transform:scale(.98)}
+.option-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:var(--beige);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.option-btn[data-score="yes"] .option-icon{background:var(--tea)}
+.option-btn[data-score="no"]  .option-icon{background:var(--frost-pale)}
+.option-btn.selected{border-color:var(--steel)}
+.option-btn[data-score="yes"].selected{background:var(--tea-pale)}
+.option-btn[data-score="no"].selected{background:var(--frost-pale)}
+
+/* ── Result screen ── */
+#s6{padding:28px 24px 20px}
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(0,0,0,.08),0 8px 16px rgba(0,0,0,.05);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--ink)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:28px}
+
+.ing-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:28px}
+.ing-card{
+  background:var(--white);border-radius:24px;
+  padding:20px 18px;
+  box-shadow:0 6px 0 rgba(0,0,0,.09),0 10px 20px rgba(0,0,0,.06);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ing-icon{
+  width:44px;height:44px;border-radius:14px;
+  background:var(--tea);flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.ing-icon.blue{background:var(--steel-pale)}
+.ing-icon.frost{background:var(--frost)}
+.ing-icon.beige{background:var(--beige)}
+.ing-name{font-size:14px;font-weight:600;color:var(--steel);margin-bottom:4px}
+.ing-headline{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.ing-desc{font-size:13px;line-height:1.8;color:var(--ink-mid);opacity:.8}
+
+.detail-img{
+  width:100%;border-radius:24px;object-fit:cover;height:180px;
+  margin-bottom:24px;
+  box-shadow:0 6px 0 rgba(0,0,0,.08),0 10px 20px rgba(0,0,0,.06);
+}
+.ref-note{
+  background:var(--steel-pale);border-radius:16px;padding:14px 16px;
+  font-size:12px;line-height:1.7;color:var(--ink);opacity:.7;
+  margin-bottom:24px;
+}
+
+/* ── Ask (contraindication result) ── */
+.ask-card{
+  background:var(--white);border-radius:24px;padding:24px 20px;
+  box-shadow:0 6px 0 rgba(0,0,0,.09),0 10px 20px rgba(0,0,0,.06);
+  margin-top:16px;
+}
+.ask-icon{
+  width:48px;height:48px;border-radius:16px;
+  background:var(--tea);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ask-card p{font-size:15px;line-height:1.9;color:var(--ink-mid)}
+
+/* ── Low result ── */
+.low-desc{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:24px}
+
+/* reduce motion */
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- Progress -->
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- Screen 0: Welcome -->
+<div class="screen active" id="s0">
+  <img src="hero.webp" alt="美顏針療程示意" class="hero-img">
+  <div class="hero-content">
+    <span class="tag-pill">FACIAL ACUPUNCTURE</span>
+    <h1 class="hero-title">美，從氣血安定<br>的那一刻開始</h1>
+    <p class="hero-sub">透過幾個簡短的問題，幫你了解美顏針是否符合你目前的狀態。大約 1–2 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>美顏針以顏面解剖學與針灸理論為基礎，用<strong>細如髮絲的針具</strong>（0.10–0.14mm），從氣血、筋膜張力與整體體質切入——不是快速修飾，而是讓臉部的好狀態從體內慢慢透出來。</p>
+  </div>
+</div>
+
+<!-- Screen 1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">這些狀況在施作前需要讓醫師了解。勾選符合的項目，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">目前懷孕、備孕或哺乳中</span>
+    </label>
+    <label class="check-card" data-val="blood">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">有凝血功能異常、正在使用抗凝血藥物，或有蟹足腫體質</span>
+    </label>
+    <label class="check-card" data-val="recent">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">近期做過雷射、音波、注射或臉部手術（1 個月內）</span>
+    </label>
+  </div>
+</div>
+
+<!-- Screens 2–5: Questions (built by JS) -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+<div class="screen quiz-screen" id="s5"></div>
+
+<!-- Screen 6: Result -->
+<div class="screen" id="s6" style="padding:28px 24px 20px"></div>
+
+<!-- Sticky CTA -->
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 7;
+const RESULT_SCREEN = 6;
+let currentScreen = 0;
+let contraFlags = new Set();
+let tagScores = {};
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    id: 'tired_face',
+    q: '你有沒有覺得，臉看起來比自己實際的狀態更累？',
+    hint: '例如常被說「看起來沒睡好」，或氣色感覺沉沉的、不夠有神',
+    options: [
+      { val:'yes', score:2, icon:'tired-yes', label:'有，而且有點在意這件事' },
+      { val:'sometimes', score:1, icon:'tired-some', label:'偶爾有，但不確定原因' },
+      { val:'no', score:0, icon:'tired-no', label:'沒有明顯這種感覺' },
+    ]
+  },
+  {
+    id: 'sagging',
+    q: '臉部有沒有緊繃感，或覺得線條沒以前清晰了？',
+    hint: '例如咬肌感覺比較緊、臉型輪廓稍微往下移，或皮膚彈性覺得不太一樣',
+    options: [
+      { val:'yes', score:2, icon:'sag-yes', label:'有，這是我比較在意的' },
+      { val:'sometimes', score:1, icon:'sag-some', label:'感覺有一點，但還不確定' },
+      { val:'no', score:0, icon:'sag-no', label:'目前沒有明顯感受' },
+    ]
+  },
+  {
+    id: 'lifestyle',
+    q: '最近睡眠或壓力，有沒有讓你覺得臉也跟著受影響？',
+    hint: '例如睡不好隔天整張臉更沉，或壓力大的時候臉部肌肉特別緊',
+    options: [
+      { val:'yes', score:2, icon:'life-yes', label:'有，睡眠和壓力對臉的影響蠻明顯的' },
+      { val:'sometimes', score:1, icon:'life-some', label:'偶爾有感覺，但還好' },
+      { val:'no', score:0, icon:'life-no', label:'沒有特別感受到關聯' },
+    ]
+  },
+  {
+    id: 'natural',
+    q: '你比較希望用自然、漸進的方式照顧臉部狀態嗎？',
+    hint: '相對於一次明顯改變的療程，更傾向讓身體慢慢調整到更好的狀態',
+    options: [
+      { val:'yes', score:2, icon:'nat-yes', label:'對，這是我的偏好' },
+      { val:'both', score:1, icon:'nat-both', label:'兩種都可以，視情況而定' },
+      { val:'no', score:0, icon:'nat-no', label:'我希望效果快一點、明顯一點' },
+    ]
+  }
+];
+
+const ING = {
+  tired_face: {
+    icon:'blue', name:'氣色調理',
+    headline:'氣血調節，從內透出好氣色',
+    desc:'中醫認為氣色反映體內氣血的流通狀態。美顏針透過刺激臉部與相關經絡，協助改善氣血循環，讓臉部肌膚得到更充分的滋養，氣色自然顯得比較明亮有神。'
+  },
+  sagging: {
+    icon:'tea', name:'線條回彈',
+    headline:'筋膜張力調整，讓輪廓更有支撐感',
+    desc:'顏面針灸以顏面解剖學為基礎，針對臉部表情肌與咬肌進行調理。研究顯示規律療程後咬肌體積有統計上顯著的變化，臉部向上支撐感也可能隨之改善。'
+  },
+  lifestyle: {
+    icon:'frost', name:'整體調理',
+    headline:'從身體整體狀態切入，讓臉反映內在',
+    desc:'壓力與睡眠會直接影響臉部肌肉張力與氣色表現。美顏針不只針對臉部，也透過體穴調整整體氣血與神經系統的放鬆反應，讓療程效果更能持續。'
+  },
+  natural: {
+    icon:'beige', name:'漸進式養護',
+    headline:'不製造新的臉，而是讓原本的你更好',
+    desc:'美顏針的哲學是漸進、自然、個人化——醫師依你每次回診的狀態微調，讓療程真正貼合你的體質，而不是用同一套模板套在所有人身上。'
+  }
+};
+
+const SVG_ICONS = {
+  'tired-yes':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7798AB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.523 22 22 17.523 22 12S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+  'tired-some':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#84A898" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.523 22 22 17.523 22 12S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+  'tired-no':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8A0B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.523 22 22 17.523 22 12S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+  'sag-yes':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7798AB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>',
+  'sag-some':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#84A898" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 7H4"/><path d="M20 12H4"/><path d="M14 17H4"/></svg>',
+  'sag-no':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8A0B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.523 22 22 17.523 22 12S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9 12h6"/></svg>',
+  'life-yes':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7798AB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+  'life-some':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#84A898" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>',
+  'life-no':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8A0B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>',
+  'nat-yes':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#7798AB" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10"/><path d="M12 22C6.477 22 2 17.523 2 12S6.477 2 12 2"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/></svg>',
+  'nat-both':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#84A898" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>',
+  'nat-no':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#B8A0B8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>',
+};
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS-1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+idx).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  currentScreen = idx;
+  updateProgress();
+}
+
+function showCTA(html){ const b=document.getElementById('stickyCTA'); b.innerHTML=html; b.classList.add('show'); }
+function hideCTA(){ const b=document.getElementById('stickyCTA'); b.classList.remove('show'); }
+
+// Screen 0
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click',()=>{ hideCTA(); showScreen(1); initS1(); });
+}
+
+// Screen 1: Contraindication
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議諮詢</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click',()=>{
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click',()=>{
+    if(contraFlags.size===0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+// Build quiz questions
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s'+screenId);
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx+1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o=>`
+        <button class="option-btn" data-score="${o.score>0?'yes':'no'}" data-val="${o.val}" data-tag="${q.id}" data-pts="${o.score}">
+          <div class="option-icon">${SVG_ICONS[o.icon]||''}</div>
+          <span>${o.label}</span>
+        </button>
+      `).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      el.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId] = { tag: btn.dataset.tag, pts: parseInt(btn.dataset.pts) };
+      const nextScreen = screenId + 1;
+      setTimeout(()=>{
+        hideCTA();
+        if(nextScreen <= 5){ showScreen(nextScreen); }
+        else { showScreen(RESULT_SCREEN); buildResult(); }
+      }, 280);
+    });
+  });
+}
+
+// Build result
+function buildResult(){
+  let total = 0;
+  let hitTags = [];
+  Object.values(selectedOptions).forEach(({tag, pts})=>{
+    total += pts;
+    if(pts >= 2) hitTags.push(tag);
+  });
+  if(hitTags.length === 0 && total > 0) hitTags = ['natural'];
+
+  const el = document.getElementById('s'+RESULT_SCREEN);
+
+  if(total >= 5){
+    // High match
+    const cards = hitTags.length ? hitTags : Object.keys(ING).slice(0,2);
+    const uniqueCards = [...new Set(cards)];
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7798AB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>很符合你的狀態</span>
+      </div>
+      <h2 class="result-title">美顏針可能正好<br>適合你現在的狀態</h2>
+      <p class="result-body">根據你的填答，你在意的幾個面向都是美顏針擅長調理的方向。以下是對應你狀態的說明——</p>
+      <div class="ing-cards">${uniqueCards.map(tag=>{
+        const d = ING[tag]; if(!d) return '';
+        return `<div class="ing-card">
+          <div class="ing-icon ${d.icon}">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/><path d="M12 6v6l4 2"/></svg>
+          </div>
+          <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+        </div>`;
+      }).join('')}</div>
+      <img src="detail.webp" alt="美顏針施作環境" class="detail-img">
+      <div class="ref-note">參考資料：2024年發表於 Aesthetic Surgery Journal Open Forum 的研究，以 10 位 40 歲以上女性為對象，每週 1 次共 8 次顏面針灸，以 MRI 觀察咬肌體積，結果顯示有統計上顯著的變化。屬小樣本非隨機研究，實際效果因個人體質而異。（DOI: 10.1093/asjof/ojae109）</div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="bookBtn">預約諮詢，讓醫師為你評估</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+    document.getElementById('backBtn').addEventListener('click',()=>{ window.location.href='../index.html'; });
+    document.getElementById('bookBtn').addEventListener('click',()=>{ window.location.href='https://jittsean.tw/%E7%BE%8E%E9%A1%8F%E9%87%9D'; });
+
+  } else if(total >= 2){
+    // Mid match
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7798AB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些面向值得了解</span>
+      </div>
+      <h2 class="result-title">也許可以先讓醫師了解你的狀況</h2>
+      <p class="result-body">你的狀況跟美顏針的調理方向有部分重疊。是否真的適合、適合從哪個角度切入，可以在門診時讓醫師評估，不用急著做決定。</p>
+      <img src="detail.webp" alt="美顏針施作環境" class="detail-img">
+      <div class="ing-card" style="margin-bottom:24px">
+        <div class="ing-icon blue">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">初診諮詢</div>
+          <div class="ing-headline">先諮詢，不需要立刻決定施作</div>
+          <div class="ing-desc">掛一般門診或填寫美容初診單，讓醫師了解你的狀態與期待，再一起討論合適的安排。單純諮詢費 200 元，若後續確認施作則扣除。</div>
+        </div>
+      </div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="consultBtn">進診間諮詢，讓醫師評估</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+    document.getElementById('backBtn').addEventListener('click',()=>{ window.location.href='../index.html'; });
+    document.getElementById('consultBtn').addEventListener('click',()=>{ window.location.href='https://jittsean.tw/%E7%BE%8E%E9%A1%8F%E9%87%9D'; });
+
+  } else {
+    // Low
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#84A898" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前狀態還好</span>
+      </div>
+      <h2 class="result-title">你現在的狀態看起來還不錯</h2>
+      <p class="low-desc">根據你的填答，目前幾個常見的困擾都不太明顯。若之後有想進一步了解美顏針的機會，隨時可以來諮詢。</p>
+    `;
+    const bar = document.getElementById('stickyCTA');
+    bar.innerHTML = '';
+    const ghost = document.createElement('button');
+    ghost.className = 'btn-ghost';
+    ghost.textContent = '回到產品目錄';
+    ghost.addEventListener('click',()=>{ window.location.href='../index.html'; });
+    bar.appendChild(ghost);
+    bar.classList.add('show');
+  }
+}
+
+// Build ask (contraindication)
+function buildAsk(){
+  const el = document.getElementById('s'+RESULT_SCREEN);
+  let bodyText = '你勾選的情況，建議在施作前先讓醫師了解並評估。可以先掛一般門診說明狀況，醫師會協助判斷是否適合，以及需要注意哪些事項。';
+
+  if(contraFlags.has('pregnant')){
+    bodyText = '懷孕、備孕或哺乳中的身體狀態較特殊，是否適合美顏針需由醫師評估。建議先掛門診讓醫師了解你的狀況，不建議自行預約施作。';
+  } else if(contraFlags.has('blood')){
+    bodyText = '凝血功能、相關用藥或蟹足腫體質，在針灸施作前需要讓醫師確認。可以來門診說明，醫師會協助評估適合的方式。';
+  } else if(contraFlags.has('recent')){
+    bodyText = '近期有醫美療程或臉部手術，需要間隔適當時間後再評估是否適合美顏針。建議告知醫師你最近做的療程，讓醫師幫你安排合適的時間點。';
+  }
+
+  el.innerHTML = `
+    <div class="section-label">建議先諮詢醫師</div>
+    <h2 class="result-title">讓醫師幫你<br>確認適不適合</h2>
+    <div class="ask-card">
+      <div class="ask-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <p>${bodyText}</p>
+    </div>
+  `;
+  const bar = document.getElementById('stickyCTA');
+  bar.innerHTML = `
+    <button class="btn-primary" id="clinicBtn">進門診讓醫師評估</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `;
+  bar.classList.add('show');
+  document.getElementById('backBtn').addEventListener('click',()=>{ window.location.href='../index.html'; });
+  document.getElementById('clinicBtn').addEventListener('click',()=>{ window.location.href='https://jittsean.tw/%E7%BE%8E%E9%A1%8F%E9%87%9D'; });
+}
+
+// Build all question screens
+[2, 3, 4, 5].forEach((sid, qi) => buildQuestion(sid, qi));
+
+// Init
+initS0();
+updateProgress();
+
+// prefers-reduced-motion already handled via CSS
+</script>
+</body>
+</html>
