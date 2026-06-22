@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>壽美降脂一號自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  /* ── Coolors palette ── */
+  --cyan:       #90F1EF;
+  --cyan-pale:  #E4FDFC;
+  --pink:       #FFD6E0;
+  --pink-pale:  #FFF3F6;
+  --gold:       #FFEF9F;
+  --gold-pale:  #FFFCE6;
+  --green:      #C1FBA4;
+  --green-pale: #EFFDE8;
+  --mint:       #7BF1A8;
+
+  /* ── Text ── */
+  --ink:      #0D2420;
+  --ink-mid:  #234038;
+  --muted:    #567068;
+
+  --white:    #FCFFFD;
+  --bg:       #F0FFFE;
+
+  /* ── Accent: darkened teal for CTAs ── */
+  --cta:      #0D7A60;
+  --cta-sh:   rgba(0,80,48,.35);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── Screens ── */
+.screen{
+  display:none;
+  min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(144,241,239,.3);
+}
+.progress-bar{
+  height:100%;background:var(--cyan);
+  transition:width .4s ease;border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--cta);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;
+  cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 var(--cta-sh),0 10px 20px rgba(13,122,96,.2);
+  transition:transform .12s ease,box-shadow .12s ease;
+  touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 var(--cta-sh),0 5px 12px rgba(13,122,96,.15)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(13,36,32,.25);border-radius:20px;
+  cursor:pointer;text-align:center;
+  transition:background .15s;
+  touch-action:manipulation;opacity:.75;
+}
+.btn-ghost:active{background:rgba(13,36,32,.05)}
+
+/* ── Screen 0: Welcome ── */
+#s0.active{
+  background:linear-gradient(160deg, var(--cyan-pale) 0%, #F4FFF8 55%, var(--gold-pale) 100%);
+  display:flex;flex-direction:column;
+}
+.hero-img{
+  width:100%;height:240px;object-fit:cover;object-position:center;
+  border-radius:0 0 32px 32px;
+  box-shadow:0 8px 24px rgba(13,36,32,.1);
+}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;
+  background:var(--cyan);color:var(--ink);
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+  box-shadow:0 3px 0 rgba(13,36,32,.12);
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--ink);margin-bottom:12px;
+}
+.hero-sub{
+  font-size:15px;line-height:1.9;color:var(--ink-mid);opacity:.85;
+  margin-bottom:24px;
+}
+.hero-card{
+  background:var(--white);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(13,36,32,.07),0 10px 24px rgba(13,36,32,.05);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--ink-mid)}
+.hero-card strong{color:var(--cta);font-weight:600}
+
+/* ── Screen 1: Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--ink-mid);opacity:.75;margin-bottom:28px}
+
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--white);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(13,36,32,.07),0 8px 16px rgba(13,36,32,.04);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  border:2px solid transparent;touch-action:manipulation;
+}
+.check-card.selected{
+  border-color:var(--cyan);
+  box-shadow:0 4px 0 rgba(144,241,239,.4),0 8px 16px rgba(144,241,239,.15);
+}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid #C4EDE9;
+  flex-shrink:0;transition:background .15s,border-color .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.check-card.selected .check-box{background:var(--cta);border-color:var(--cta)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.6;color:var(--ink)}
+
+/* ── Quiz questions ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--ink-mid);opacity:.7;margin-bottom:28px}
+
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;
+  background:var(--white);border:2px solid transparent;
+  border-radius:20px;padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--ink);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(13,36,32,.07),0 8px 16px rgba(13,36,32,.04);
+  transition:border-color .12s,box-shadow .12s,transform .1s;
+  touch-action:manipulation;display:flex;align-items:center;gap:12px;width:100%;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(0,0,0,.2);transition:background .12s;
+}
+.option-btn.selected .opt-dot{background:var(--cta)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;
+  transform:translateY(-50%);width:8px;height:8px;
+  background:var(--cta);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(13,122,96,.2);
+}
+.option-btn.selected{border-color:var(--cta)}
+
+/* ── Result screen ── */
+#s5{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+#s5.result-insurance{
+  background:linear-gradient(160deg, var(--cyan-pale) 0%, var(--green-pale) 100%);
+}
+#s5.result-selfpay{
+  background:linear-gradient(160deg, var(--gold-pale) 0%, var(--pink-pale) 100%);
+}
+#s5.result-ask{
+  background:linear-gradient(160deg, var(--pink-pale) 0%, var(--gold-pale) 100%);
+}
+
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(13,36,32,.07),0 8px 16px rgba(13,36,32,.04);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--ink)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:24px}
+
+/* ── Stat strip ── */
+.stat-strip{
+  background:var(--mint);border-radius:24px;padding:20px;
+  margin-bottom:24px;
+  box-shadow:0 6px 0 rgba(13,36,32,.12),0 10px 20px rgba(123,241,168,.3);
+}
+.stat-row{display:flex;gap:12px;justify-content:space-around}
+.stat-item{text-align:center;color:var(--ink)}
+.stat-num{font-family:'Noto Serif TC',serif;font-size:28px;font-weight:700;line-height:1}
+.stat-label{font-size:11px;opacity:.75;margin-top:4px;line-height:1.4}
+
+/* ── Ing cards ── */
+.ing-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.ing-card{
+  background:var(--white);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(13,36,32,.07),0 10px 20px rgba(13,36,32,.04);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ing-icon{
+  width:44px;height:44px;border-radius:14px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.ing-icon.green{background:var(--green)}
+.ing-icon.cyan{background:var(--cyan)}
+.ing-icon.gold{background:var(--gold)}
+.ing-icon.pink{background:var(--pink)}
+.ing-icon.mint{background:var(--mint)}
+.ing-name{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.ing-headline{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.ing-desc{font-size:13px;line-height:1.8;color:var(--ink-mid);opacity:.85}
+
+/* ── 藥字號提醒 ── */
+.rx-note{
+  background:var(--gold);border-radius:20px;padding:16px 18px;
+  margin-bottom:24px;
+  box-shadow:0 4px 0 rgba(13,36,32,.08),0 8px 16px rgba(255,239,159,.3);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.rx-note-icon{
+  width:36px;height:36px;border-radius:10px;background:#fff;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 2px 6px rgba(13,36,32,.1);
+}
+.rx-note-text{font-size:13px;line-height:1.8;color:var(--ink);font-weight:500}
+.rx-note-text strong{font-weight:700}
+
+/* ── Path badge ── */
+.path-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  border-radius:12px;padding:6px 14px;margin-bottom:20px;
+  font-size:13px;font-weight:600;
+  box-shadow:0 3px 0 rgba(13,36,32,.1);
+}
+.path-badge.insurance{background:var(--green);color:var(--ink)}
+.path-badge.selfpay{background:var(--gold);color:var(--ink)}
+
+/* ── Ask ── */
+.ask-card{
+  background:var(--white);border-radius:24px;padding:24px 20px;
+  box-shadow:0 6px 0 rgba(13,36,32,.07),0 10px 20px rgba(13,36,32,.04);
+  margin-top:16px;
+}
+.ask-icon{
+  width:48px;height:48px;border-radius:16px;
+  background:var(--gold);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ask-card p{font-size:15px;line-height:1.9;color:var(--ink-mid)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- Screen 0: Welcome -->
+<div class="screen active" id="s0">
+  <img src="hero.webp" alt="壽美降脂一號" class="hero-img"
+       onerror="this.style.height='80px';this.style.background='var(--cyan-pale)';this.removeAttribute('onerror')">
+  <div class="hero-content">
+    <span class="tag-pill">血脂健康自測</span>
+    <h1 class="hero-title">血脂偏高，<br>不一定要一直吃西藥</h1>
+    <p class="hero-sub">3 個問題，幫你看看壽美膠囊是否適合你，以及是否符合健保給付條件。</p>
+  </div>
+  <div class="hero-card">
+    <p>壽美降脂一號是衛福部核准的<strong>藥字號中藥處方</strong>，研究顯示連續服用 8 週，可降低 LDL（壞膽固醇）達 <strong>28%</strong>、總膽固醇 22%，且對肝腎指數無明顯影響，符合健保規範者可健保給付。</p>
+  </div>
+</div>
+
+<!-- Screen 1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">這些狀況需要讓醫師先確認。勾選符合的項目，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">目前懷孕或哺乳中</span>
+    </label>
+    <label class="check-card" data-val="liver">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">醫師告知目前肝功能指數（GOT/GPT）超過正常值 3 倍以上</span>
+    </label>
+    <label class="check-card" data-val="fibrate">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">正在服用苯貝特、非諾貝特等 fibrate 類降血脂藥</span>
+    </label>
+  </div>
+</div>
+
+<!-- Screens 2–4: Questions -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+
+<!-- Screen 5: Result -->
+<div class="screen" id="s5"></div>
+
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 6;
+const RESULT_SCREEN = 5;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '你最近半年有做過血脂相關的抽血嗎？',
+    hint: '包含總膽固醇、低密度脂蛋白（LDL）、三酸甘油脂等',
+    options: [
+      {
+        val:'high-test', pts:3,
+        label:'有，而且有至少一項超標（總膽固醇>200、LDL>130、或三酸甘油脂>200）'
+      },
+      {
+        val:'normal-test', pts:1,
+        label:'有做過，不過數值都在正常範圍內'
+      },
+      {
+        val:'no-test', pts:0,
+        label:'還沒做過，不太清楚自己目前的數值'
+      },
+    ]
+  },
+  {
+    q: '你目前有在服用醫師開的降血脂藥嗎？',
+    hint: '例如史達汀類（Statin）或其他西醫開立的血脂藥',
+    options: [
+      {
+        val:'no-drug', pts:2,
+        label:'完全沒有在吃'
+      },
+      {
+        val:'has-drug', pts:1,
+        label:'有在吃，但想了解有沒有中藥的選項'
+      },
+      {
+        val:'unsure-drug', pts:0,
+        label:'不確定手邊的藥算不算降血脂藥'
+      },
+    ]
+  },
+  {
+    q: '平常飲食習慣比較接近哪一種？',
+    hint: '選一個最符合的就好',
+    options: [
+      {
+        val:'high-diet', pts:1,
+        label:'愛吃肉類、油炸，或常有聚餐應酬、三餐外食為主'
+      },
+      {
+        val:'mid-diet', pts:0,
+        label:'偶爾大魚大肉，但平常飲食還算均衡'
+      },
+      {
+        val:'clean-diet', pts:0,
+        label:'飲食清淡，高油高脂的東西很少碰'
+      },
+    ]
+  }
+];
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + idx).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  currentScreen = idx;
+  updateProgress();
+}
+
+function showCTA(html){ const b=document.getElementById('stickyCTA'); b.innerHTML=html; b.classList.add('show'); }
+function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'); }
+
+/* ── S0 ── */
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); initS1(); });
+}
+
+/* ── S1: Contraindication ── */
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議先諮詢</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click', () => {
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click', () => {
+    if(contraFlags.size === 0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+/* ── Build questions ── */
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s' + screenId);
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx + 1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o => `
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-dot" aria-hidden="true"></span>${o.label}
+        </button>
+      `).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId] = { val: btn.dataset.val, pts: parseInt(btn.dataset.pts) };
+      const nextScreen = screenId + 1;
+      setTimeout(() => {
+        hideCTA();
+        if(nextScreen <= 4){ showScreen(nextScreen); }
+        else { showScreen(RESULT_SCREEN); buildResult(); }
+      }, 300);
+    });
+  });
+}
+
+/* ── RX note shared HTML ── */
+function rxNoteHTML(){
+  return `
+    <div class="rx-note">
+      <div class="rx-note-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--cta)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      </div>
+      <div class="rx-note-text"><strong>壽美降脂一號是藥字號，需由醫師開立處方</strong>，不是自行在藥局購買的保健食品。填完測驗後，請至診間讓醫師評估並開立。</div>
+    </div>
+  `;
+}
+
+/* ── Build result ── */
+function buildResult(){
+  const q1 = (selectedOptions[2] || {}).val;
+  const q2 = (selectedOptions[3] || {}).val;
+  const q3 = (selectedOptions[4] || {}).val;
+
+  const el = document.getElementById('s' + RESULT_SCREEN);
+
+  if(q1 === 'high-test'){
+    /* ─── Group 1: 健保路徑 ─── */
+    el.classList.add('result-insurance');
+
+    const hasDrug = q2 === 'has-drug' || q2 === 'unsure-drug';
+
+    // Drug-related card
+    const drugCard = hasDrug ? `
+      <div class="ing-card">
+        <div class="ing-icon cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">關於目前的降血脂藥</div>
+          <div class="ing-headline">可以帶著目前用藥清單，讓醫師評估是否轉換</div>
+          <div class="ing-desc">壽美可與 Statin 類藥物間隔 1–2 小時合併使用，也可依醫師判斷轉換。帶著手邊的藥袋或藥名來診間，醫師幫你確認最適合的安排。</div>
+        </div>
+      </div>` : `
+      <div class="ing-card">
+        <div class="ing-icon green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">目前未服用降脂藥</div>
+          <div class="ing-headline">最直接的健保給付路徑</div>
+          <div class="ing-desc">還沒有在吃西藥、而且血脂報告有超標，是健保給付壽美最清楚的條件。帶著半年內的血脂報告進診間，醫師確認後即可開立。</div>
+        </div>
+      </div>`;
+
+    el.innerHTML = `
+      <div class="path-badge insurance">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        符合健保給付條件
+      </div>
+      <h2 class="result-title">你很可能符合<br>健保給付壽美的條件</h2>
+      <p class="result-body">血脂數值超標、又尚未服用西藥降脂藥，正好符合健保中醫降血脂藥的給付規範。帶著半年內的血脂報告，讓醫師確認後即可開立。</p>
+
+      <div class="stat-strip">
+        <div class="stat-row">
+          <div class="stat-item">
+            <div class="stat-num">28%</div>
+            <div class="stat-label">LDL 平均<br>降低幅度</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">22%</div>
+            <div class="stat-label">總膽固醇<br>降低幅度</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num">8週</div>
+            <div class="stat-label">研究觀察<br>週期</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ing-cards">
+        <div class="ing-card">
+          <div class="ing-icon mint">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          </div>
+          <div>
+            <div class="ing-name">健保給付條件</div>
+            <div class="ing-headline">帶著這份報告，讓醫師確認</div>
+            <div class="ing-desc">健保規定需持半年內的血脂報告。總膽固醇 ≥200、LDL ≥130、或三酸甘油脂 ≥200，任一超標即符合門檻。雲端健保資料、抽血所或健檢報告都可以使用。</div>
+          </div>
+        </div>
+        ${drugCard}
+        <div class="ing-card">
+          <div class="ing-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.523 22 22 17.523 22 12S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          </div>
+          <div>
+            <div class="ing-name">為什麼選壽美</div>
+            <div class="ing-headline">效果好，對肝腎指數無明顯影響</div>
+            <div class="ing-desc">研究報告顯示，服用壽美後 GOT、GPT 及 CPK 指數無統計上顯著變化，是對肝腎功能友善的降血脂選項。長期服用也有助於降低心血管事件及中風風險。</div>
+          </div>
+        </div>
+      </div>
+
+      ${rxNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">帶著血脂報告，進診間讓醫師確認</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else {
+    /* ─── Group 2: 自費路徑 ─── */
+    el.classList.add('result-selfpay');
+
+    // Personalized card based on Q1
+    const q1Card = (q1 === 'no-test') ? `
+      <div class="ing-card">
+        <div class="ing-icon cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">還沒做過血脂抽血</div>
+          <div class="ing-headline">先了解自己的數值，才知道現在在哪裡</div>
+          <div class="ing-desc">高血脂初期幾乎沒有症狀，靠感覺很難察覺。可以在這次門診同時做血脂四項抽血，數值出來就能讓醫師更精準地評估，也可以確認是否符合健保給付條件。</div>
+        </div>
+      </div>` : `
+      <div class="ing-card">
+        <div class="ing-icon cyan">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">數值正常，但風險仍在</div>
+          <div class="ing-headline">數值在標準內，不代表沒有上升的空間</div>
+          <div class="ing-desc">血脂受飲食、遺傳、年齡影響，在標準邊緣的數值可能在幾個月內就有變動。早期介入、維持穩定，比等到超標才處理更輕鬆。</div>
+        </div>
+      </div>`;
+
+    // Diet card
+    const dietCard = (q3 === 'high-diet') ? `
+      <div class="ing-card">
+        <div class="ing-icon gold">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2l1.5 1.5M12 2v3M20.5 3.5L19 5M9 10c0-1.7 1.3-3 3-3s3 1.3 3 3c0 2-3 4-3 4s-3-2-3-4z"/><path d="M12 21v-4M6 21h12"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">飲食與血脂</div>
+          <div class="ing-headline">愛吃肉和油炸，血脂其實最有感</div>
+          <div class="ing-desc">高油高脂的飲食會促使肝臟合成更多 LDL 膽固醇和三酸甘油脂。壽美的成分以消食活血、健脾燥濕為主，從中藥角度協助日常代謝，讓偶爾的聚餐不那麼有負擔。</div>
+        </div>
+      </div>` : (q3 === 'mid-diet') ? `
+      <div class="ing-card">
+        <div class="ing-icon gold">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2l1.5 1.5M12 2v3M20.5 3.5L19 5M9 10c0-1.7 1.3-3 3-3s3 1.3 3 3c0 2-3 4-3 4s-3-2-3-4z"/><path d="M12 21v-4M6 21h12"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">偶爾放縱的飲食</div>
+          <div class="ing-headline">不用天天大魚大肉，血脂也會默默上升</div>
+          <div class="ing-desc">只要飲食稍微不均衡，血脂就可能在不知不覺中累積。壽美可以幫助維持日常的血脂穩定，讓不那麼完美的飲食不至於對身體造成太大負擔。</div>
+        </div>
+      </div>` : '';
+
+    el.innerHTML = `
+      <div class="path-badge selfpay">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        自費評估方案
+      </div>
+      <h2 class="result-title">你有高血脂的<br>潛在風險，壽美能幫上忙</h2>
+      <p class="result-body">雖然血脂數值目前可能尚未達到健保給付標準，有飲食習慣或其他風險因素的人，醫師評估後可以自費開立壽美膠囊，早期介入、預防數值持續上升。</p>
+
+      <div class="ing-cards">
+        ${q1Card}
+        ${dietCard}
+        <div class="ing-card">
+          <div class="ing-icon green">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22C17.523 22 22 17.523 22 12S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+          <div>
+            <div class="ing-name">壽美的額外好處</div>
+            <div class="ing-headline">降血脂以外，還有對血管的長期保護</div>
+            <div class="ing-desc">研究顯示，長期服用壽美可降低代謝症候群風險、改善腰臀比，也有助於降低中風及肝癌風險，且隨服用時間延長效果遞增。</div>
+          </div>
+        </div>
+      </div>
+
+      ${rxNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向醫師諮詢，了解自費方案</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+  }
+
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('ctaBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Build ask ── */
+function buildAsk(){
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  el.classList.add('result-ask');
+
+  let bodyText = '你勾選的情況需要讓醫師先確認，確保服用壽美對你是安全合適的。可以掛一般門診說明，醫師會幫你評估並給出建議。';
+  if(contraFlags.has('pregnant')){
+    bodyText = '懷孕或哺乳期間，任何藥物都需要謹慎評估。建議先讓醫師了解你目前的狀況，確認是否適合，不需要自行決定。';
+  } else if(contraFlags.has('liver')){
+    bodyText = '肝功能指數明顯偏高的情況下，服用任何藥物都需要醫師先確認。可以來門診說明目前的狀況，讓醫師評估最合適的做法。';
+  } else if(contraFlags.has('fibrate')){
+    bodyText = 'Fibrate 類藥物（苯貝特、非諾貝特）與壽美合併使用，需要特別監測肌酸（CK）值。建議讓醫師了解你目前的用藥情況，確認合適的安排再開始。';
+  }
+
+  el.innerHTML = `
+    <div class="section-label">建議先讓醫師確認</div>
+    <h2 class="result-title">讓醫師幫你<br>確認適不適合</h2>
+    <div class="ask-card">
+      <div class="ask-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <p>${bodyText}</p>
+    </div>
+  `;
+
+  const bar = document.getElementById('stickyCTA');
+  bar.innerHTML = `
+    <button class="btn-primary" id="clinicBtn">進診間，讓醫師為你評估</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `;
+  bar.classList.add('show');
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('clinicBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Init ── */
+[2, 3, 4].forEach((sid, qi) => buildQuestion(sid, qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
