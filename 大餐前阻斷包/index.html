@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>大餐前阻斷評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  --navy:       #324376;
+  --navy-sh:    rgba(30,35,90,.32);
+  --blue:       #586BA4;
+  --blue-pale:  #E8ECF6;
+  --gold:       #F5DD90;
+  --gold-pale:  #FFFBE8;
+  --orange:     #F68E5F;
+  --orange-pale:#FEF0E8;
+  --coral:      #F76C5E;
+  --coral-pale: #FEECEA;
+
+  --ink:     #1A1F3A;
+  --ink-mid: #2E3560;
+  --muted:   #6070A0;
+
+  --white:   #FEFEFE;
+  --bg:      #FDFBF2;
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+.screen{
+  display:none;min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(246,142,95,.2);
+}
+.progress-bar{
+  height:100%;background:var(--orange);
+  transition:width .4s ease;border-radius:0 4px 4px 0;
+}
+
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+.btn-primary{
+  display:block;width:100%;
+  background:var(--navy);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 var(--navy-sh),0 10px 20px rgba(50,67,118,.2);
+  transition:transform .12s,box-shadow .12s;touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 var(--navy-sh),0 5px 10px rgba(50,67,118,.12)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(26,31,58,.18);border-radius:20px;
+  cursor:pointer;text-align:center;opacity:.72;
+  transition:background .15s;touch-action:manipulation;
+}
+.btn-ghost:active{background:rgba(26,31,58,.05)}
+
+/* ── s0 Welcome ── */
+#s0.active{
+  background:linear-gradient(170deg,#1A1F3A 0%,#324376 40%,var(--bg) 72%);
+  display:flex;flex-direction:column;
+}
+.hero-img{
+  width:100%;height:auto;display:block;
+  border-radius:0 0 32px 32px;
+  box-shadow:0 8px 32px rgba(26,31,58,.28);
+}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;
+  background:var(--coral);color:#fff;
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+  box-shadow:0 3px 0 rgba(180,50,40,.3);
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--ink);margin-bottom:12px;
+}
+.hero-sub{
+  font-size:15px;line-height:1.9;color:var(--ink-mid);opacity:.85;margin-bottom:24px;
+}
+.hero-card{
+  background:var(--white);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(26,31,58,.07),0 10px 24px rgba(26,31,58,.05);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--ink-mid)}
+.hero-card strong{color:var(--navy);font-weight:600}
+
+/* ── s1 Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+.screen-title{font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;line-height:1.5;margin-bottom:8px}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--ink-mid);opacity:.75;margin-bottom:28px}
+
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--white);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(26,31,58,.07),0 8px 16px rgba(26,31,58,.04);
+  cursor:pointer;border:2px solid transparent;
+  transition:border-color .12s,transform .1s;touch-action:manipulation;
+}
+.check-card.selected{border-color:var(--navy);box-shadow:0 4px 0 rgba(50,67,118,.2),0 8px 16px rgba(50,67,118,.08)}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid #C0C8E0;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:background .15s,border-color .15s;
+}
+.check-card.selected .check-box{background:var(--navy);border-color:var(--navy)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.6;color:var(--ink)}
+
+/* ── Quiz ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.q-text{font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;line-height:1.6;margin-bottom:8px}
+.q-hint{font-size:13px;line-height:1.7;color:var(--ink-mid);opacity:.7;margin-bottom:28px}
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;width:100%;
+  background:var(--white);border:2px solid transparent;border-radius:20px;
+  padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--ink);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(26,31,58,.07),0 8px 16px rgba(26,31,58,.04);
+  transition:border-color .12s,transform .1s;touch-action:manipulation;
+  display:flex;align-items:center;gap:12px;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-dot{flex-shrink:0;width:7px;height:7px;border-radius:50%;background:rgba(0,0,0,.2);transition:background .12s}
+.option-btn.selected .opt-dot{background:var(--navy)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;background:var(--navy);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(50,67,118,.2);
+}
+.option-btn.selected{border-color:var(--navy)}
+
+/* ── Result ── */
+#s6{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+#s6.result-hi{background:linear-gradient(160deg,var(--gold-pale) 0%,var(--orange-pale) 100%)}
+#s6.result-mid{background:linear-gradient(160deg,var(--blue-pale) 0%,var(--gold-pale) 100%)}
+#s6.result-low{background:linear-gradient(160deg,var(--gold-pale) 0%,var(--coral-pale) 100%)}
+#s6.result-ask{background:linear-gradient(160deg,var(--coral-pale) 0%,var(--blue-pale) 100%)}
+
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(26,31,58,.07),0 8px 16px rgba(26,31,58,.04);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--ink)}
+.result-title{font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;line-height:1.5;margin-bottom:12px}
+.result-body{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:24px}
+
+/* Gold accent strip */
+.gold-strip{
+  background:linear-gradient(135deg,var(--navy),var(--blue));
+  border-radius:24px;padding:18px 16px;margin-bottom:24px;
+  box-shadow:0 6px 0 rgba(30,35,90,.28),0 10px 20px rgba(50,67,118,.2);
+  display:flex;gap:0;
+}
+.gold-item{
+  flex:1;min-width:0;text-align:center;padding:0 8px;
+  border-right:1px solid rgba(255,255,255,.2);
+}
+.gold-item:last-child{border-right:none}
+.gold-name{font-size:13px;font-weight:700;color:var(--gold);margin-bottom:3px;word-break:keep-all}
+.gold-role{font-size:11px;color:rgba(255,255,255,.7);line-height:1.4;word-break:keep-all}
+
+.ing-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.ing-card{
+  background:var(--white);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(26,31,58,.07),0 10px 20px rgba(26,31,58,.04);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ing-icon{width:44px;height:44px;border-radius:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.ing-icon.navy{background:var(--blue-pale)}
+.ing-icon.gold{background:var(--gold-pale);border:1.5px solid var(--gold)}
+.ing-icon.orange{background:var(--orange-pale)}
+.ing-icon.coral{background:var(--coral-pale)}
+.ing-name{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.ing-headline{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.ing-desc{font-size:13px;line-height:1.8;color:var(--ink-mid);opacity:.85}
+
+.ask-card{
+  background:var(--white);border-radius:24px;padding:24px 20px;
+  box-shadow:0 6px 0 rgba(26,31,58,.07),0 10px 20px rgba(26,31,58,.04);
+  margin-top:16px;
+}
+.ask-icon{width:48px;height:48px;border-radius:16px;background:var(--coral-pale);margin-bottom:16px;display:flex;align-items:center;justify-content:center}
+.ask-card p{font-size:15px;line-height:1.9;color:var(--ink-mid)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- s0 Welcome -->
+<div class="screen active" id="s0">
+  <img src="hero.webp" alt="大餐前阻斷" class="hero-img"
+       onerror="this.style.height='120px';this.style.background='var(--navy)';this.removeAttribute('onerror')">
+  <div class="hero-content">
+    <span class="tag-pill">大餐前保護機制</span>
+    <h1 class="hero-title">聚餐不用忍，<br>吃前先準備好身體</h1>
+    <p class="hero-sub">4 個問題，看看大餐前阻斷配方是否適合你的飲食型態。大約 1 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>大餐前阻斷配方結合<strong>澱粉吸收阻斷、脂肪代謝促進、飽腹感支持</strong>四種機制，在聚餐或大魚大肉前服用，幫助身體提前建立保護。<strong>每次聚餐前一包</strong>，搭配溫水服用，不需要每天吃。</p>
+  </div>
+</div>
+
+<!-- s1 Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">這些狀況服用前建議先與醫師確認。勾選符合的，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">懷孕或哺乳中</span>
+    </label>
+    <label class="check-card" data-val="anticoag">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">正在服用抗凝血藥、降血糖藥或心血管相關藥物</span>
+    </label>
+    <label class="check-card" data-val="liver">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">有肝功能異常或正在接受肝臟相關治療</span>
+    </label>
+    <label class="check-card" data-val="gi">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">有胃潰瘍、腸道發炎，或腸胃手術後尚在恢復中</span>
+    </label>
+  </div>
+</div>
+
+<!-- s2–s5 Questions -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+<div class="screen quiz-screen" id="s5"></div>
+
+<!-- s6 Result -->
+<div class="screen" id="s6"></div>
+
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 7;
+const RESULT_SCREEN = 6;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '你平常的聚餐、外食狀況，大概是怎樣的頻率？',
+    hint: '選一個最符合你生活的',
+    options: [
+      { val:'daily-dining',    pts:3, label:'幾乎天天，飯局或應酬很多，很難控制' },
+      { val:'frequent-dining', pts:2, label:'一週 2–3 次，聚餐算頻繁，外食量也大' },
+      { val:'occasional',      pts:1, label:'偶爾有聚餐，但每次都吃得很多' },
+      { val:'rare',            pts:0, label:'很少聚餐，主要自己準備飲食' },
+    ]
+  },
+  {
+    q: '吃完大餐或聚餐後，你通常有什麼感覺？',
+    hint: '選最常發生的那個',
+    options: [
+      { val:'bloated', pts:2, label:'肚子脹、油膩感很重，身體明顯不舒服' },
+      { val:'regret',  pts:2, label:'飽到後悔，知道吃太多，但當下就是停不下來' },
+      { val:'slight',  pts:1, label:'有點撐，但通常隔天就沒事了' },
+      { val:'fine',    pts:0, label:'很少有特別不舒服的感覺' },
+    ]
+  },
+  {
+    q: '聚餐和外食對你的體重或身材有影響嗎？',
+    hint: '選最貼近你的狀況',
+    options: [
+      { val:'weight-gain',  pts:3, label:'明顯感覺每次大餐後體重會上升，而且很難降回來' },
+      { val:'cant-control', pts:2, label:'有在注意，但一到聚餐就破功，控制不住' },
+      { val:'guilt',        pts:1, label:'大致還好，只是希望吃多一點也不用那麼有罪惡感' },
+      { val:'no-impact',    pts:0, label:'目前對體重沒有特別的擔心' },
+    ]
+  },
+  {
+    q: '聚餐時你通常吃的是哪種類型？',
+    hint: '選最接近的',
+    options: [
+      { val:'high-carb-fat', pts:2, label:'大魚大肉、油炸炒物、大量澱粉（熱炒、燒烤、圍爐）' },
+      { val:'western',       pts:1, label:'西式、日式料理為主，油脂和醬料偏多' },
+      { val:'light-heavy',   pts:0, label:'吃的比較清淡，但量很多' },
+    ]
+  }
+];
+
+const ING_BY_VAL = {
+  'daily-dining': {
+    icon:'navy', name:'澱粉吸收阻斷成分',
+    headline:'高頻率外食，每次吃前先阻斷澱粉',
+    desc:'配方中的白腎豆萃取物（Phase2）能競爭性抑制α-澱粉酶活性，延緩澱粉分解為葡萄糖的速度，降低每餐飯後的熱量實際吸收量。多項人體試驗顯示，餐前補充可顯著減少澱粉來源的淨熱量。'
+  },
+  'frequent-dining': {
+    icon:'navy', name:'澱粉吸收阻斷成分',
+    headline:'聚餐前啟動阻斷，讓身體不完全接收每頓大餐',
+    desc:'白腎豆萃取物在餐前服用，能在消化道建立暫時的「阻斷窗口」，讓本次進食的澱粉中有一部分繞過消化直接通過，降低餐後血糖峰值與熱量吸收。'
+  },
+  'bloated': {
+    icon:'gold', name:'水溶性膳食纖維',
+    headline:'脹氣油膩，腸道需要一個緩衝',
+    desc:'配方中的水溶性膳食纖維（Fibersol-2）能在腸道形成黏稠凝膠層，延緩油脂和糖分的吸收速度，同時提供飽腹感，幫助減少單次進食的整體負擔，讓大餐後腸道的壓力不那麼大。'
+  },
+  'regret': {
+    icon:'gold', name:'飽腹感成分',
+    headline:'吃到停不下來？讓身體的飽足訊號早一點發出',
+    desc:'配方中的非洲芒果種子萃取物（IGOB131）有研究指出可調節瘦素（Leptin）訊號，支持飽腹感的傳遞。搭配膳食纖維的物理飽腹效果，幫助讓大腦更早收到「夠了」的信號。'
+  },
+  'weight-gain': {
+    icon:'orange', name:'脂肪代謝促進成分',
+    headline:'吃完脂肪就卡住，要讓它有機會被代謝掉',
+    desc:'配方中的左旋肉鹼（L-carnitine）是將脂肪酸轉運進粒線體燃燒的關鍵載體。多項統合分析顯示，補充左旋肉鹼搭配日常活動，有助支持脂肪的氧化代謝，讓大餐攝入的脂肪有更多機會被消耗而不是儲存。'
+  },
+  'cant-control': {
+    icon:'orange', name:'代謝支持組合',
+    headline:'控不住吃，那就從代謝端補強',
+    desc:'綠茶萃取物（EGCG）研究顯示可提升脂肪氧化率，同時作為抗氧化劑減少高熱量飲食帶來的氧化壓力。搭配脂肪代謝成分，幫助身體在聚餐後更有效率地處理多餘的熱量。'
+  },
+  'high-carb-fat': {
+    icon:'coral', name:'脂肪生成阻斷成分',
+    headline:'大量澱粉 + 油脂，要從兩端同時攔截',
+    desc:'山茶花籽萃取物的研究顯示，其活性成分可抑制三酸甘油酯的生成路徑，減少飲食中過多的熱量轉化為體脂儲存。搭配澱粉阻斷成分，形成「碳水阻斷 + 脂肪阻斷」的雙重防線。'
+  },
+  'western': {
+    icon:'coral', name:'抗氧化 + 代謝成分',
+    headline:'高油醬料吃多，身體氧化壓力也會升高',
+    desc:'綠茶萃取物（EGCG）有大量研究支持其抗氧化能力，能減少高脂飲食後體內自由基的累積。同時輔助代謝途徑，幫助身體更有效處理攝入的油脂和熱量。'
+  }
+};
+
+function updateProgress(){
+  document.getElementById('progressBar').style.width = Math.round((currentScreen/(TOTAL_SCREENS-1))*100) + '%';
+}
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+idx).classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  currentScreen=idx; updateProgress();
+}
+function showCTA(html){const b=document.getElementById('stickyCTA');b.innerHTML=html;b.classList.add('show')}
+function hideCTA(){document.getElementById('stickyCTA').classList.remove('show')}
+
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click',()=>{hideCTA();showScreen(1);initS1();});
+}
+
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('selected');
+      if(card.classList.contains('selected')) contraFlags.add(card.dataset.val);
+      else contraFlags.delete(card.dataset.val);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議先諮詢</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click',()=>{
+    if(contraFlags.size>0){hideCTA();showScreen(RESULT_SCREEN);buildAsk();return;}
+    hideCTA();showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click',()=>{
+    if(contraFlags.size===0) contraFlags.add('general');
+    hideCTA();showScreen(RESULT_SCREEN);buildAsk();
+  });
+}
+
+const Q_SCREENS=[2,3,4,5];
+function buildQuestion(screenId,qIdx){
+  const q=QUESTIONS[qIdx];
+  const el=document.getElementById('s'+screenId);
+  el.innerHTML=`
+    <div class="q-progress">第 ${qIdx+1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o=>`
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-dot" aria-hidden="true"></span>${o.label}
+        </button>`).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      el.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId]={val:btn.dataset.val,pts:parseInt(btn.dataset.pts)};
+      const nextIdx=qIdx+1;
+      setTimeout(()=>{
+        hideCTA();
+        if(nextIdx<Q_SCREENS.length){showScreen(Q_SCREENS[nextIdx]);}
+        else{showScreen(RESULT_SCREEN);buildResult();}
+      },300);
+    });
+  });
+}
+
+function icon(color){
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+}
+function iconColor(type){
+  return type==='navy'?'var(--navy)':type==='gold'?'#C4960A':type==='orange'?'var(--orange)':'var(--coral)';
+}
+
+function buildResult(){
+  let total=0; const vals=[];
+  Object.values(selectedOptions).forEach(({val,pts})=>{total+=pts;if(pts>0)vals.push(val);});
+  const el=document.getElementById('s'+RESULT_SCREEN);
+
+  if(total>=6){
+    el.classList.add('result-hi');
+    const keys=vals.filter(v=>ING_BY_VAL[v]).slice(0,3);
+    el.innerHTML=`
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>非常符合你的需求</span>
+      </div>
+      <h2 class="result-title">大餐前阻斷配方<br>很適合你的飲食型態</h2>
+      <p class="result-body">根據你的填答，你的聚餐頻率和飲食狀況，正是這個配方設計的核心使用情境——</p>
+      <div class="gold-strip">
+        <div class="gold-item"><div class="gold-name">澱粉阻斷</div><div class="gold-role">阻礙澱粉酶<br>減少碳水吸收</div></div>
+        <div class="gold-item"><div class="gold-name">脂肪代謝</div><div class="gold-role">轉運脂肪酸<br>促進燃燒利用</div></div>
+        <div class="gold-item"><div class="gold-name">飽腹支持</div><div class="gold-role">延緩消化<br>減少過量攝取</div></div>
+      </div>
+      <div class="ing-cards">
+        ${keys.map(k=>{const d=ING_BY_VAL[k];return`<div class="ing-card">
+          <div class="ing-icon ${d.icon}">${icon(iconColor(d.icon))}</div>
+          <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+        </div>`;}).join('')}
+      </div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯了解如何取得</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else if(total>=2){
+    el.classList.add('result-mid');
+    const keys=vals.filter(v=>ING_BY_VAL[v]).slice(0,2);
+    el.innerHTML=`
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些面向很符合</span>
+      </div>
+      <h2 class="result-title">你的部分情況<br>和這個配方的方向相符</h2>
+      <p class="result-body">你偶爾有大餐聚餐的場合，在這些時候提前使用阻斷配方，能在不完全改變飲食習慣的前提下，減少每次大餐對身體的整體負擔。</p>
+      <div class="ing-cards">
+        ${keys.length>0?keys.map(k=>{const d=ING_BY_VAL[k];return`<div class="ing-card">
+          <div class="ing-icon ${d.icon}">${icon(iconColor(d.icon))}</div>
+          <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+        </div>`;}).join(''):`<div class="ing-card">
+          <div class="ing-icon navy">${icon('var(--navy)')}</div>
+          <div>
+            <div class="ing-name">彈性使用</div>
+            <div class="ing-headline">偶爾用，在需要的時候才服用</div>
+            <div class="ing-desc">大餐前阻斷配方不需要每天吃，設計上就是為了聚餐或特殊場合準備的。有吃大餐的日子服用一包，平時不需要，使用上很有彈性。</div>
+          </div>
+        </div>`}
+      </div>
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯詢問看看</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else {
+    el.classList.add('result-low');
+    el.innerHTML=`
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前聚餐負擔不大</span>
+      </div>
+      <h2 class="result-title">你目前的飲食狀況<br>壓力看起來不大</h2>
+      <p class="result-body">從你的填答來看，聚餐頻率和大餐後的影響都不算明顯。如果未來有特殊場合（年節聚會、出差應酬），大餐前配方也可以臨時備著使用。</p>
+      <div class="ing-card" style="margin-bottom:24px">
+        <div class="ing-icon gold">${icon('#C4960A')}</div>
+        <div>
+          <div class="ing-name">備用型保養</div>
+          <div class="ing-headline">不需要每天用，備著以防萬一</div>
+          <div class="ing-desc">大餐前阻斷配方的設計邏輯就是「需要時才用」，不是日常補充品。偶爾有大飯局的日子，提前備一包，讓身體不用每次都靠自己消化一切。</div>
+        </div>
+      </div>
+    `;
+    const bar=document.getElementById('stickyCTA');
+    bar.innerHTML=`<button class="btn-ghost" id="backBtn">回到產品目錄</button>`;
+    bar.classList.add('show');
+    document.getElementById('backBtn').addEventListener('click',()=>{window.location.href='../index.html';});
+    return;
+  }
+
+  document.getElementById('backBtn').addEventListener('click',()=>{window.location.href='../index.html';});
+  document.getElementById('ctaBtn').addEventListener('click',()=>{window.location.href='../index.html';});
+}
+
+function buildAsk(){
+  const el=document.getElementById('s'+RESULT_SCREEN);
+  el.classList.add('result-ask');
+  let bodyText='你勾選的狀況在使用前建議先讓醫師確認，確保這個配方對你是合適的。向同仁說明，同仁可以協助安排諮詢。';
+  if(contraFlags.has('anticoag')) bodyText='正在服用抗凝血藥或降血糖藥的情況下，配方中的植物萃取成分可能影響藥效。建議先告訴醫師你有意嘗試的產品，讓醫師確認交互作用。';
+  else if(contraFlags.has('liver')) bodyText='有肝功能問題的情況下，部分植物萃取成分需謹慎評估。建議先讓主治醫師確認，不要在肝功能未穩定前自行補充。';
+  else if(contraFlags.has('gi')) bodyText='腸胃有發炎或術後恢復中，消化道對刺激較敏感。建議先讓醫師確認腸胃狀況穩定後，再評估是否適合使用。';
+  else if(contraFlags.has('pregnant')) bodyText='懷孕或哺乳中，任何補充配方都需謹慎評估。建議先諮詢婦產科醫師，確認後再決定。';
+
+  el.innerHTML=`
+    <div class="section-label">建議先確認</div>
+    <h2 class="result-title">先讓我們幫你<br>確認一下</h2>
+    <div class="ask-card">
+      <div class="ask-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--coral)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <p>${bodyText}</p>
+    </div>
+  `;
+  const bar=document.getElementById('stickyCTA');
+  bar.innerHTML=`
+    <button class="btn-primary" id="clinicBtn">向櫃檯詢問，同仁協助確認</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `;
+  bar.classList.add('show');
+  document.getElementById('backBtn').addEventListener('click',()=>{window.location.href='../index.html';});
+  document.getElementById('clinicBtn').addEventListener('click',()=>{window.location.href='../index.html';});
+}
+
+Q_SCREENS.forEach((sid,qi)=>buildQuestion(sid,qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
