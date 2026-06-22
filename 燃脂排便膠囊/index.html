@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>順姿S膠囊自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  --red:       #D00000;
+  --red-pale:  #FFF0F0;
+  --amber:     #FFBA08;
+  --amber-pale:#FFF8D6;
+  --blue:      #3F88C5;
+  --blue-pale: #E8F3FC;
+  --navy:      #032B43;
+  --navy-mid:  #0B4668;
+  --teal:      #136F63;
+  --teal-pale: #DFF2EE;
+
+  --ink:     #032B43;
+  --ink-mid: #0B4668;
+  --muted:   #4A6B7E;
+
+  --white:   #FEFEFE;
+  --bg:      #FFFCF2;
+
+  --cta:    #D00000;
+  --cta-sh: rgba(140,0,0,.32);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+.screen{
+  display:none;min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(255,186,8,.2);
+}
+.progress-bar{
+  height:100%;background:var(--amber);
+  transition:width .4s ease;border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--cta);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;
+  cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 var(--cta-sh),0 10px 20px rgba(208,0,0,.18);
+  transition:transform .12s,box-shadow .12s;touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 var(--cta-sh),0 5px 10px rgba(208,0,0,.12)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(3,43,67,.2);border-radius:20px;
+  cursor:pointer;text-align:center;opacity:.72;
+  transition:background .15s;touch-action:manipulation;
+}
+.btn-ghost:active{background:rgba(3,43,67,.05)}
+
+/* ── Screen 0: Welcome ── */
+#s0.active{
+  background:linear-gradient(170deg,var(--amber-pale) 0%,var(--bg) 60%,var(--red-pale) 100%);
+  display:flex;flex-direction:column;
+}
+.hero-img{
+  width:100%;height:auto;display:block;
+  border-radius:0 0 32px 32px;
+  box-shadow:0 8px 24px rgba(3,43,67,.14);
+}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;
+  background:var(--red);color:#fff;
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+  box-shadow:0 3px 0 rgba(140,0,0,.28);
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--ink);margin-bottom:12px;
+}
+.hero-sub{
+  font-size:15px;line-height:1.9;color:var(--ink-mid);opacity:.85;margin-bottom:24px;
+}
+.hero-card{
+  background:var(--white);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(3,43,67,.07),0 10px 24px rgba(3,43,67,.05);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--ink-mid)}
+.hero-card strong{color:var(--red);font-weight:600}
+
+/* ── Usage note (amber strip) ── */
+.usage-note{
+  background:var(--amber);border-radius:20px;padding:12px 16px;
+  margin-top:14px;display:flex;gap:10px;align-items:flex-start;
+}
+.usage-note-text{font-size:13px;line-height:1.7;color:var(--navy);font-weight:600}
+
+/* ── Screen 1: Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--ink-mid);opacity:.75;margin-bottom:28px}
+
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--white);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(3,43,67,.07),0 8px 16px rgba(3,43,67,.04);
+  cursor:pointer;border:2px solid transparent;
+  transition:border-color .12s,transform .1s;touch-action:manipulation;
+}
+.check-card.selected{border-color:var(--red);box-shadow:0 4px 0 rgba(208,0,0,.2),0 8px 16px rgba(208,0,0,.08)}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid #C8D8E8;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+  transition:background .15s,border-color .15s;
+}
+.check-card.selected .check-box{background:var(--red);border-color:var(--red)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.6;color:var(--ink)}
+
+/* ── Quiz ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--ink-mid);opacity:.7;margin-bottom:28px}
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;width:100%;
+  background:var(--white);border:2px solid transparent;border-radius:20px;
+  padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--ink);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(3,43,67,.07),0 8px 16px rgba(3,43,67,.04);
+  transition:border-color .12s,transform .1s;touch-action:manipulation;
+  display:flex;align-items:center;gap:12px;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(0,0,0,.2);transition:background .12s;
+}
+.option-btn.selected .opt-dot{background:var(--red)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;transform:translateY(-50%);
+  width:8px;height:8px;background:var(--red);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(208,0,0,.18);
+}
+.option-btn.selected{border-color:var(--red)}
+
+/* ── Result ── */
+#s6{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+#s6.result-hi{background:linear-gradient(160deg,var(--red-pale) 0%,var(--amber-pale) 100%)}
+#s6.result-mid{background:linear-gradient(160deg,var(--blue-pale) 0%,var(--amber-pale) 100%)}
+#s6.result-low{background:linear-gradient(160deg,var(--teal-pale) 0%,var(--amber-pale) 100%)}
+#s6.result-ask{background:linear-gradient(160deg,var(--red-pale) 0%,var(--blue-pale) 100%)}
+
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(3,43,67,.07),0 8px 16px rgba(3,43,67,.04);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--ink)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:24px}
+
+.ing-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.ing-card{
+  background:var(--white);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(3,43,67,.07),0 10px 20px rgba(3,43,67,.04);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ing-icon{
+  width:44px;height:44px;border-radius:14px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+}
+.ing-icon.red{background:var(--red-pale)}
+.ing-icon.amber{background:var(--amber-pale)}
+.ing-icon.teal{background:var(--teal-pale)}
+.ing-icon.blue{background:var(--blue-pale)}
+.ing-name{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.ing-headline{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.ing-desc{font-size:13px;line-height:1.8;color:var(--ink-mid);opacity:.85}
+
+.food-note{
+  background:var(--blue-pale);border-radius:20px;padding:14px 18px;
+  margin-bottom:24px;
+  box-shadow:0 4px 0 rgba(3,43,67,.05);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.food-note-text{font-size:13px;line-height:1.8;color:var(--ink);font-weight:500}
+.food-note-text strong{font-weight:700;color:var(--navy)}
+
+/* 腹瀉提示特別卡 */
+.diarrhea-tip{
+  background:var(--amber);border-radius:20px;padding:14px 18px;
+  margin-bottom:24px;
+  box-shadow:0 4px 0 rgba(180,100,0,.2);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.diarrhea-tip-text{font-size:13px;line-height:1.8;color:var(--navy);font-weight:600}
+
+.ask-card{
+  background:var(--white);border-radius:24px;padding:24px 20px;
+  box-shadow:0 6px 0 rgba(3,43,67,.07),0 10px 20px rgba(3,43,67,.04);
+  margin-top:16px;
+}
+.ask-icon{
+  width:48px;height:48px;border-radius:16px;
+  background:var(--red-pale);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ask-card p{font-size:15px;line-height:1.9;color:var(--ink-mid)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- s0: Welcome -->
+<div class="screen active" id="s0">
+  <img src="hero.webp" alt="順姿S膠囊" class="hero-img"
+       onerror="this.style.height='80px';this.style.background='var(--amber-pale)';this.removeAttribute('onerror')">
+  <div class="hero-content">
+    <span class="tag-pill">燃脂 × 排便順暢</span>
+    <h1 class="hero-title">吃對了，腸道動起來，<br>代謝才有感</h1>
+    <p class="hero-sub">4 個問題，看看順姿S膠囊是否符合你目前的狀況。大約 1 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>順姿S膠囊以<strong>唐辛子（辣椒素）</strong>支持代謝，搭配<strong>決明子、望江南</strong>溫和促進腸道蠕動，加上<strong>玉米膳食纖維</strong>增加飽腹感，多管齊下的日常腸道與體態管理配方。<strong>晚餐後 1 顆</strong>，每日固定同一時間服用。</p>
+    <div class="usage-note">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <p class="usage-note-text">服用後若排便次數明顯增加，建議改為隔日服用，讓腸道逐步適應</p>
+    </div>
+  </div>
+</div>
+
+<!-- s1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">這些狀況服用前建議先與醫師確認。勾選符合的，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">懷孕或哺乳中</span>
+    </label>
+    <label class="check-card" data-val="ibs">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">有大腸激躁症（IBS）、腸道發炎或不明原因反覆腹痛</span>
+    </label>
+    <label class="check-card" data-val="bleeding">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">近期有血便、黑便，或曾接受腸道手術</span>
+    </label>
+    <label class="check-card" data-val="capsaicin-allergy">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">吃辣後腸胃非常不舒服，或對辣椒素有過敏反應</span>
+    </label>
+  </div>
+</div>
+
+<!-- s2–s5: Questions -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+<div class="screen quiz-screen" id="s5"></div>
+
+<!-- s6: Result -->
+<div class="screen" id="s6"></div>
+
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 7;
+const RESULT_SCREEN = 6;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '最近幾週，你的排便狀況比較像哪一種？',
+    hint: '選一個最符合的就好',
+    options: [
+      { val:'constipated',     pts:3, label:'兩三天甚至更久才排一次，有時肚子悶脹不舒服' },
+      { val:'irregular-bowel', pts:2, label:'排便不太規律，有時順有時卡，量感覺不多' },
+      { val:'want-better',     pts:1, label:'排便大致正常，但想讓腸道更暢快一點' },
+      { val:'bowel-ok',        pts:0, label:'排便一直很順，主要是其他方面的考量' },
+    ]
+  },
+  {
+    q: '以下哪個最符合你目前的身材狀況？',
+    hint: '選最接近的就好',
+    options: [
+      { val:'belly-fat',  pts:2, label:'下腹或腰部有一圈脂肪，一直很難去掉' },
+      { val:'overweight', pts:2, label:'整體體重比理想高，試了幾次都很難持續瘦下去' },
+      { val:'maintain',   pts:1, label:'體重還好，但想讓體態更緊實，代謝維持好一點' },
+      { val:'no-concern', pts:0, label:'目前沒有特別的身材困擾' },
+    ]
+  },
+  {
+    q: '你平常的飲食習慣，最像哪一種？',
+    hint: '選最接近你日常的',
+    options: [
+      { val:'high-fat',  pts:2, label:'外食很多，常吃炸的、重口味、高油高糖的食物' },
+      { val:'low-fiber', pts:1, label:'飲食大致正常，但蔬菜和纖維吃得不夠多' },
+      { val:'balanced',  pts:0, label:'飲食還算均衡，蔬果也吃得夠' },
+    ]
+  },
+  {
+    q: '以下哪個最像你的日常生活節奏？',
+    hint: '最接近的就好',
+    options: [
+      { val:'sedentary',      pts:2, label:'工作以久坐為主，下班後很少有力氣動，代謝感覺偏慢' },
+      { val:'irregular-life', pts:1, label:'作息比較不規律，三餐時間或睡眠常常不固定' },
+      { val:'routine',        pts:0, label:'生活算規律，想透過輔助讓腸道代謝更穩定' },
+    ]
+  }
+];
+
+const ING_BY_VAL = {
+  'constipated': {
+    icon:'teal', name:'決明子 + 望江南',
+    headline:'溫和促進腸道蠕動，針對積滯型便秘',
+    desc:'決明子和望江南都含有蒽醌類成分，在傳統草本應用中常用於溫和促進腸道蠕動，幫助宿便排出。相比強效瀉藥，這類草本成分作用較溫和，適合作為日常輔助習慣性便秘的選項。'
+  },
+  'irregular-bowel': {
+    icon:'teal', name:'膳食纖維（玉米來源）',
+    headline:'每天補充纖維，讓腸道蠕動更有節奏',
+    desc:'可溶性膳食纖維能吸水膨脹，幫助糞便成形，並促進腸道蠕動。世界衛生組織建議每日攝取 25–38g 膳食纖維，但台灣外食族普遍不足。順姿S的玉米膳食纖維幫助從這個缺口補起。'
+  },
+  'belly-fat': {
+    icon:'red', name:'唐辛子（辣椒素）',
+    headline:'促進代謝，從燃燒熱量的角度支持體態管理',
+    desc:'辣椒素是辣椒的活性成分，研究顯示可短暫促進交感神經活性、提高能量消耗，並輕微抑制食慾。多項統合分析顯示，長期補充辣椒素有助於支持體重管理，效益溫和但穩定。'
+  },
+  'overweight': {
+    icon:'red', name:'唐辛子 + 膳食纖維',
+    headline:'代謝支持 + 飽腹感，從兩個方向一起調整',
+    desc:'辣椒素從代謝端提高熱量消耗，膳食纖維從飲食端增加飽腹感、減少不必要的熱量攝取。兩者同時作用，提供比單一成分更全面的日常體態管理基礎。'
+  },
+  'high-fat': {
+    icon:'amber', name:'膳食纖維 + 唐辛子',
+    headline:'高油飲食的緩衝，幫助腸道不過度負擔',
+    desc:'可溶性膳食纖維在腸道中能延緩油脂和糖分的吸收速度，降低餐後血糖和血脂的急速上升。對於外食多、高油高糖飲食的族群，飯後補充膳食纖維是很常見的日常保養策略。'
+  },
+  'low-fiber': {
+    icon:'amber', name:'玉米膳食纖維',
+    headline:'纖維攝取不足，腸道最直接感受到',
+    desc:'腸道菌叢需要膳食纖維作為養分，纖維攝取不足時腸道蠕動會變慢，排便也跟著不順。玉米來源的可溶性纖維吸收率高且溫和，適合補足日常飲食中的纖維缺口。'
+  },
+  'sedentary': {
+    icon:'blue', name:'代謝支持組合',
+    headline:'久坐讓代謝變慢，從內部給一個啟動的推力',
+    desc:'長時間久坐會降低基礎代謝率，讓脂肪更容易堆積。辣椒素能短暫提升交感神經活性，給代謝一個溫和的刺激；同時補充膳食纖維維持腸道蠕動，讓身體代謝通道維持暢通。'
+  },
+  'irregular-life': {
+    icon:'blue', name:'腸道規律性',
+    headline:'固定時間服用，幫助建立腸道的節奏感',
+    desc:'腸道有自己的生理時鐘，作息不規律時最先受影響的往往是排便節奏。每天晚餐後固定服用順姿S，配合溫水，是幫助腸道建立日常節奏感的一個簡單方式。'
+  }
+};
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + idx).classList.add('active');
+  window.scrollTo({ top:0, behavior:'instant' });
+  currentScreen = idx;
+  updateProgress();
+}
+function showCTA(html){ const b=document.getElementById('stickyCTA'); b.innerHTML=html; b.classList.add('show'); }
+function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'); }
+
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click', ()=>{ hideCTA(); showScreen(1); initS1(); });
+}
+
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card => {
+    card.addEventListener('click', ()=>{
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議先諮詢</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click', ()=>{
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click', ()=>{
+    if(contraFlags.size === 0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+const Q_SCREENS = [2, 3, 4, 5];
+
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s' + screenId);
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx + 1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o=>`
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-dot" aria-hidden="true"></span>${o.label}
+        </button>`).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', ()=>{
+      el.querySelectorAll('.option-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId] = { val:btn.dataset.val, pts:parseInt(btn.dataset.pts) };
+      const nextIdx = qIdx + 1;
+      setTimeout(()=>{
+        hideCTA();
+        if(nextIdx < Q_SCREENS.length){ showScreen(Q_SCREENS[nextIdx]); }
+        else { showScreen(RESULT_SCREEN); buildResult(); }
+      }, 300);
+    });
+  });
+}
+
+function iconSVG(color){
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>`;
+}
+
+function foodNoteHTML(){
+  return `
+    <div class="food-note">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="food-note-text"><strong>順姿S膠囊是食品，非藥品</strong>，不宣稱治療便秘或任何疾病。若有長期慢性便秘或排便帶血，請優先就醫檢查。</div>
+    </div>
+    <div class="diarrhea-tip">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <p class="diarrhea-tip-text">服用後若排便次數明顯增加，建議改為隔日服用，讓腸道逐步適應，不需要天天吃</p>
+    </div>
+  `;
+}
+
+function buildResult(){
+  let total = 0;
+  const vals = [];
+  Object.values(selectedOptions).forEach(({val, pts})=>{ total += pts; if(pts > 0) vals.push(val); });
+
+  const el = document.getElementById('s' + RESULT_SCREEN);
+
+  if(total >= 5){
+    el.classList.add('result-hi');
+    const cardKeys = vals.filter(v => ING_BY_VAL[v]).slice(0, 3);
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>高度符合你的需求</span>
+      </div>
+      <h2 class="result-title">順姿S膠囊<br>很符合你目前的狀況</h2>
+      <p class="result-body">根據你的填答，以下是和你狀況最相關的成分說明——</p>
+      <div class="ing-cards">
+        ${cardKeys.map(k=>{
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">${iconSVG(d.icon==='red'?'var(--red)':d.icon==='amber'?'var(--amber)':d.icon==='teal'?'var(--teal)':'var(--blue)')}</div>
+            <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${foodNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯了解如何取得</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else if(total >= 2){
+    el.classList.add('result-mid');
+    const cardKeys = vals.filter(v => ING_BY_VAL[v]).slice(0, 2);
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些面向很符合</span>
+      </div>
+      <h2 class="result-title">你有一些狀況<br>和順姿S的方向相符</h2>
+      <p class="result-body">你的部分情況和順姿S膠囊的保養方向有重疊。如果對腸道順暢或代謝維持有興趣，歡迎向櫃檯進一步詢問。</p>
+      <div class="ing-cards">
+        ${cardKeys.length > 0 ? cardKeys.map(k=>{
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">${iconSVG(d.icon==='red'?'var(--red)':d.icon==='amber'?'var(--amber)':d.icon==='teal'?'var(--teal)':'var(--blue)')}</div>
+            <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+          </div>`;
+        }).join('') : `<div class="ing-card">
+          <div class="ing-icon teal">${iconSVG('var(--teal)')}</div>
+          <div>
+            <div class="ing-name">日常腸道保養</div>
+            <div class="ing-headline">維持腸道蠕動，是身體整體代謝的基礎</div>
+            <div class="ing-desc">腸道健康影響的不只是排便，也包括代謝效率、吸收能力和整體精神狀態。每天晚餐後一顆，建立固定的腸道保養習慣。</div>
+          </div>
+        </div>`}
+      </div>
+      ${foodNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯詢問看看</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else {
+    el.classList.add('result-low');
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前腸道狀態不錯</span>
+      </div>
+      <h2 class="result-title">你現在的腸道狀態<br>看起來還不錯</h2>
+      <p class="result-body">從你的填答來看，目前沒有特別明顯的排便或代謝困擾。如果想透過預防性保養讓好狀態持續，順姿S也可以作為每天的輔助選項。</p>
+      <div class="ing-card" style="margin-bottom:24px">
+        <div class="ing-icon amber">${iconSVG('var(--amber)')}</div>
+        <div>
+          <div class="ing-name">預防性腸道保養</div>
+          <div class="ing-headline">趁狀態好，最適合養成保養習慣</div>
+          <div class="ing-desc">每天晚餐後 1 顆，不需要等到便秘或代謝出問題才開始。固定的腸道保養習慣，是維持長期消化健康最輕鬆的方式。</div>
+        </div>
+      </div>
+      ${foodNoteHTML()}
+    `;
+    const bar = document.getElementById('stickyCTA');
+    bar.innerHTML = `<button class="btn-ghost" id="backBtn">回到產品目錄</button>`;
+    bar.classList.add('show');
+    document.getElementById('backBtn').addEventListener('click', ()=>{ window.location.href='../index.html'; });
+    return;
+  }
+
+  document.getElementById('backBtn').addEventListener('click', ()=>{ window.location.href='../index.html'; });
+  document.getElementById('ctaBtn').addEventListener('click', ()=>{ window.location.href='../index.html'; });
+}
+
+function buildAsk(){
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  el.classList.add('result-ask');
+
+  let bodyText = '你勾選的狀況建議在服用前先讓醫師確認，確保這個產品對你是合適的。向同仁說明你的狀況，同仁可以協助確認或安排諮詢。';
+  if(contraFlags.has('ibs')){
+    bodyText = '腸道發炎或大腸激躁症患者，腸道本身對刺激已較敏感，辣椒素和草本通便成分可能讓症狀加重。建議先讓醫師評估你的腸道狀況，確認是否適合這類產品。';
+  } else if(contraFlags.has('bleeding')){
+    bodyText = '血便或黑便是需要優先就醫的訊號，在確認病因之前不建議自行使用通便或促腸蠕動的補充品。請先讓醫師確認腸道狀況。';
+  } else if(contraFlags.has('pregnant')){
+    bodyText = '懷孕或哺乳中，腸道敏感性較高，任何草本通便成分都需謹慎評估。建議先諮詢婦產科醫師，確認後再決定。';
+  } else if(contraFlags.has('capsaicin-allergy')){
+    bodyText = '順姿S含唐辛子（辣椒素），腸胃對辣椒素特別敏感者可能不耐受。建議先向同仁或醫師說明你的體質，再確認是否適合。';
+  }
+
+  el.innerHTML = `
+    <div class="section-label">建議先確認</div>
+    <h2 class="result-title">先讓我們幫你<br>確認一下</h2>
+    <div class="ask-card">
+      <div class="ask-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <p>${bodyText}</p>
+    </div>
+  `;
+
+  const bar = document.getElementById('stickyCTA');
+  bar.innerHTML = `
+    <button class="btn-primary" id="clinicBtn">向櫃檯詢問，同仁協助確認</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `;
+  bar.classList.add('show');
+  document.getElementById('backBtn').addEventListener('click', ()=>{ window.location.href='../index.html'; });
+  document.getElementById('clinicBtn').addEventListener('click', ()=>{ window.location.href='../index.html'; });
+}
+
+Q_SCREENS.forEach((sid, qi) => buildQuestion(sid, qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
