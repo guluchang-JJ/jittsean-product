@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>康齡血紅素 EX 自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  /* ── Coolors palette ── */
+  --evergreen:    #053225;
+  --magenta:      #E34A6F;
+  --cherry:       #F7B2BD;
+  --cherry-pale:  #FEF1F4;
+  --khaki:        #B2A198;
+  --khaki-pale:   #F5EFED;
+  --sage:         #60A561;
+  --sage-pale:    #EAF5EA;
+
+  /* ── Text ── */
+  --ink:     #1C1218;
+  --ink-mid: #3A2830;
+  --muted:   #7A6068;
+
+  --white:   #FEFCFD;
+  --bg:      #FDF3F6;
+
+  /* ── CTA: evergreen ── */
+  --cta:    #053225;
+  --cta-sh: rgba(5,50,37,.38);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── Screens ── */
+.screen{
+  display:none;min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(227,74,111,.18);
+}
+.progress-bar{
+  height:100%;background:var(--magenta);
+  transition:width .4s ease;border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--cta);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;
+  cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 var(--cta-sh),0 10px 20px rgba(5,50,37,.15);
+  transition:transform .12s ease,box-shadow .12s ease;
+  touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 var(--cta-sh),0 5px 12px rgba(5,50,37,.1)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(28,18,24,.22);border-radius:20px;
+  cursor:pointer;text-align:center;
+  transition:background .15s;touch-action:manipulation;opacity:.72;
+}
+.btn-ghost:active{background:rgba(28,18,24,.05)}
+
+/* ── Screen 0: Welcome ── */
+#s0.active{
+  background:linear-gradient(160deg, var(--cherry-pale) 0%, var(--bg) 55%, var(--sage-pale) 100%);
+  display:flex;flex-direction:column;
+}
+.hero-img{
+  width:100%;height:240px;object-fit:cover;object-position:center top;
+  border-radius:0 0 32px 32px;
+  box-shadow:0 8px 24px rgba(28,18,24,.1);
+}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;
+  background:var(--magenta);color:#fff;
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+  box-shadow:0 3px 0 rgba(180,30,60,.3);
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--ink);margin-bottom:12px;
+}
+.hero-sub{
+  font-size:15px;line-height:1.9;color:var(--ink-mid);opacity:.85;
+  margin-bottom:24px;
+}
+.hero-card{
+  background:var(--white);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(28,18,24,.07),0 10px 24px rgba(28,18,24,.05);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--ink-mid)}
+.hero-card strong{color:var(--magenta);font-weight:600}
+
+/* ── Screen 1: Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--ink-mid);opacity:.75;margin-bottom:28px}
+
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--white);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(28,18,24,.07),0 8px 16px rgba(28,18,24,.04);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  border:2px solid transparent;touch-action:manipulation;
+}
+.check-card.selected{
+  border-color:var(--magenta);
+  box-shadow:0 4px 0 rgba(227,74,111,.25),0 8px 16px rgba(227,74,111,.1);
+}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid var(--cherry);
+  flex-shrink:0;transition:background .15s,border-color .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.check-card.selected .check-box{background:var(--cta);border-color:var(--cta)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.6;color:var(--ink)}
+
+/* ── Quiz questions ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--ink-mid);opacity:.7;margin-bottom:28px}
+
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;
+  background:var(--white);border:2px solid transparent;
+  border-radius:20px;padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--ink);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(28,18,24,.07),0 8px 16px rgba(28,18,24,.04);
+  transition:border-color .12s,box-shadow .12s,transform .1s;
+  touch-action:manipulation;display:flex;align-items:center;gap:12px;width:100%;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(0,0,0,.2);transition:background .12s;
+}
+.option-btn.selected .opt-dot{background:var(--magenta)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;
+  transform:translateY(-50%);width:8px;height:8px;
+  background:var(--magenta);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(227,74,111,.2);
+}
+.option-btn.selected{border-color:var(--magenta)}
+
+/* ── Result screen ── */
+#s5{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+#s5.result-hi{
+  background:linear-gradient(160deg, var(--cherry-pale) 0%, var(--sage-pale) 100%);
+}
+#s5.result-mid{
+  background:linear-gradient(160deg, var(--khaki-pale) 0%, var(--cherry-pale) 100%);
+}
+#s5.result-low{
+  background:linear-gradient(160deg, var(--sage-pale) 0%, var(--khaki-pale) 100%);
+}
+#s5.result-ask{
+  background:linear-gradient(160deg, var(--cherry-pale) 0%, var(--khaki-pale) 100%);
+}
+
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(28,18,24,.07),0 8px 16px rgba(28,18,24,.04);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--ink)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:24px}
+
+/* ── Ing cards ── */
+.ing-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.ing-card{
+  background:var(--white);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(28,18,24,.07),0 10px 20px rgba(28,18,24,.04);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ing-icon{
+  width:44px;height:44px;border-radius:14px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.ing-icon.cherry{background:var(--cherry)}
+.ing-icon.sage{background:var(--sage-pale);border:1.5px solid var(--sage)}
+.ing-icon.khaki{background:var(--khaki-pale);border:1.5px solid var(--khaki)}
+.ing-icon.evergreen{background:#D4E8DC}
+.ing-name{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.ing-headline{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.ing-desc{font-size:13px;line-height:1.8;color:var(--ink-mid);opacity:.85}
+
+/* ── 食品提醒 ── */
+.food-note{
+  background:var(--cherry);border-radius:20px;padding:14px 18px;
+  margin-bottom:24px;
+  box-shadow:0 4px 0 rgba(28,18,24,.07),0 8px 16px rgba(247,178,189,.3);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.food-note-text{font-size:13px;line-height:1.8;color:var(--ink);font-weight:500}
+.food-note-text strong{font-weight:700}
+
+/* ── Nutrient trio strip ── */
+.trio-strip{
+  display:flex;gap:10px;margin-bottom:24px;
+}
+.trio-item{
+  flex:1;background:var(--white);border-radius:20px;padding:16px 12px;
+  text-align:center;
+  box-shadow:0 5px 0 rgba(28,18,24,.08),0 8px 18px rgba(28,18,24,.05);
+}
+.trio-dot{
+  width:10px;height:10px;border-radius:50%;margin:0 auto 8px;
+}
+.trio-dot.magenta{background:var(--magenta)}
+.trio-dot.sage{background:var(--sage)}
+.trio-dot.khaki{background:var(--khaki)}
+.trio-name{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.trio-role{font-size:11px;color:var(--muted);line-height:1.5}
+
+/* ── Ask ── */
+.ask-card{
+  background:var(--white);border-radius:24px;padding:24px 20px;
+  box-shadow:0 6px 0 rgba(28,18,24,.07),0 10px 20px rgba(28,18,24,.04);
+  margin-top:16px;
+}
+.ask-icon{
+  width:48px;height:48px;border-radius:16px;
+  background:var(--cherry);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ask-card p{font-size:15px;line-height:1.9;color:var(--ink-mid)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- Screen 0: Welcome -->
+<div class="screen active" id="s0">
+  <img src="hero.webp" alt="康齡血紅素 EX 液態軟膠囊" class="hero-img"
+       onerror="this.style.height='80px';this.style.background='var(--cherry-pale)';this.removeAttribute('onerror')">
+  <div class="hero-content">
+    <span class="tag-pill">鐵質營養補充</span>
+    <h1 class="hero-title">容易累、氣色差，<br>身體在提醒你缺什麼</h1>
+    <p class="hero-sub">4 個問題，幫你看看康齡血紅素 EX 是否適合你現在的狀態。大約 1 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>康齡血紅素 EX 是以<strong>鐵、葉酸、維生素 B12</strong> 為核心的液態軟膠囊，三者皆與紅血球正常形成有關。另添加銅、鋅、錳、鎂等微量元素，支持日常代謝機能。<strong>每日早餐後 1–2 粒</strong>，簡單建立補充習慣。</p>
+  </div>
+</div>
+
+<!-- Screen 1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">以下狀況在補充前建議先讓醫師或藥師了解。勾選符合的，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="iron-drug">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">目前有在服用醫師開立的鐵劑、或其他含鐵補充品</span>
+    </label>
+    <label class="check-card" data-val="disorder">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">曾被診斷為地中海型貧血、血色素沉著症，或有鐵代謝異常</span>
+    </label>
+    <label class="check-card" data-val="gi">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">最近出現不明原因的黑便、長期腸胃不適，或莫名其妙的明顯疲倦</span>
+    </label>
+    <label class="check-card" data-val="allergy">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">對大豆或動物膠（明膠）過敏</span>
+    </label>
+  </div>
+</div>
+
+<!-- Screens 2–5: Questions -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+<div class="screen quiz-screen" id="s5q"></div>
+
+<!-- Screen 6: Result -->
+<div class="screen" id="s6"></div>
+
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 7;
+const RESULT_SCREEN = 6;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '你最近常不常覺得疲倦、沒有精神？',
+    hint: '尤其是睡眠足夠了卻還是累，或下午特別提不起勁',
+    options: [
+      { val:'tired',     pts:2, label:'常常，這幾乎是我的日常狀態' },
+      { val:'sometimes', pts:1, label:'偶爾會，但還在可以接受的範圍' },
+      { val:'fine',      pts:0, label:'精神還不錯，這個問題不太明顯' },
+    ]
+  },
+  {
+    q: '你的氣色或臉色，最近怎麼樣？',
+    hint: '照鏡子的感覺，或家人朋友有沒有說過',
+    options: [
+      { val:'pale',           pts:2, label:'臉色偏白或偏黃，感覺沒什麼血色' },
+      { val:'sometimes-pale', pts:1, label:'偶爾氣色不太好，說不太清楚是不是真的差' },
+      { val:'good-color',     pts:0, label:'氣色挺好的，沒有特別的問題' },
+    ]
+  },
+  {
+    q: '你平常的飲食習慣，比較接近哪一種？',
+    hint: '選一個最符合的就好',
+    options: [
+      { val:'low-iron',    pts:2, label:'很少吃紅肉或內臟，或是以蔬食、少肉為主' },
+      { val:'unbalanced',  pts:1, label:'外食為主，什麼都吃，但蔬菜水果比較少' },
+      { val:'balanced',    pts:0, label:'飲食均衡，肉類蔬菜都有，也有在注意' },
+    ]
+  },
+  {
+    q: '以下情況，有哪項符合你？',
+    hint: '選一個最接近的就好',
+    options: [
+      { val:'female',  pts:2, label:'女性，且目前有月經、備孕中、懷孕、或剛生產完' },
+      { val:'elderly', pts:1, label:'60 歲以上，或食量比以前明顯小很多' },
+      { val:'other',   pts:0, label:'都不符合，我是一般的成年男性' },
+    ]
+  }
+];
+
+const ING_BY_VAL = {
+  tired: {
+    icon:'cherry',
+    name:'鐵 + 維生素 B12',
+    headline:'容易累，跟這兩個營養素的攝取有關',
+    desc:'鐵是血紅素的重要構成元素，負責將氧氣運送至全身組織；維生素 B12 則參與能量代謝與紅血球正常形成。兩者不足時，身體的氧氣利用效率可能下降，容易感到疲倦無力。'
+  },
+  pale: {
+    icon:'sage',
+    name:'鐵 + 葉酸',
+    headline:'氣色差，可能是紅血球相關營養不足的訊號',
+    desc:'臉色偏白或偏黃，有時候是紅血球相關營養攝取不夠的訊號。鐵與葉酸都參與紅血球的正常形成；葉酸每粒提供 400 微克，達每日參考值 100%。'
+  },
+  'low-iron': {
+    icon:'cherry',
+    name:'飲食來源鐵質不足',
+    headline:'蔬食或少肉飲食，更需要注意鐵質補充',
+    desc:'鐵分為血基質鐵（動物來源）和非血基質鐵（植物來源），前者吸收率遠高於後者。很少吃紅肉或內臟的人，從飲食攝取的吸收性鐵相對有限，補充鐵質更有其意義。'
+  },
+  unbalanced: {
+    icon:'khaki',
+    name:'外食族的營養缺口',
+    headline:'三餐外食，幾個關鍵營養素容易不夠',
+    desc:'外食族的飲食組成往往偏向澱粉與油脂，鐵、葉酸、B12 等與紅血球相關的營養素容易攝取不足。康齡血紅素 EX 把三者整合在一粒膠囊裡，日常補充比較方便。'
+  },
+  female: {
+    icon:'cherry',
+    name:'女性鐵質需求',
+    headline:'每個月的月經，是女性最常見的鐵質流失原因',
+    desc:'生育年齡的女性，每次月經都有固定的鐵質流失；備孕或孕期對葉酸與鐵的需求更高。這些生命週期的特殊需求，讓補充鐵、葉酸、B12 對女性有特別的意義。'
+  },
+  elderly: {
+    icon:'evergreen',
+    name:'銀髮族的吸收變化',
+    headline:'食量縮小了，維生素 B12 和鐵反而更需要注意',
+    desc:'隨著年齡增長，胃酸分泌減少會影響維生素 B12 的吸收；食量縮小也讓從食物取得的鐵和葉酸更難達到足量。液態軟膠囊好吞食，適合作為銀髮族的日常補充選項。'
+  }
+};
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + idx).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  currentScreen = idx;
+  updateProgress();
+}
+
+function showCTA(html){ const b=document.getElementById('stickyCTA'); b.innerHTML=html; b.classList.add('show'); }
+function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'); }
+
+/* ── S0 ── */
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); initS1(); });
+}
+
+/* ── S1 ── */
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議先諮詢</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click', () => {
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click', () => {
+    if(contraFlags.size === 0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+/* ── Build questions ── */
+/* Q screens: s2, s3, s4, s5q → IDs map to question index 0,1,2,3 */
+const Q_SCREENS = [2, 3, 4, '5q'];
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s' + screenId);
+  const lastQScreen = '5q';
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx + 1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o => `
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-dot" aria-hidden="true"></span>${o.label}
+        </button>
+      `).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[String(screenId)] = { val: btn.dataset.val, pts: parseInt(btn.dataset.pts) };
+      const nextIdx = qIdx + 1;
+      setTimeout(() => {
+        hideCTA();
+        if(nextIdx < Q_SCREENS.length){
+          showScreen(Q_SCREENS[nextIdx]);
+        } else {
+          showScreen(RESULT_SCREEN);
+          buildResult();
+        }
+      }, 300);
+    });
+  });
+}
+
+/* ── Food note shared HTML ── */
+function foodNoteHTML(){
+  return `
+    <div class="food-note">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--ink)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="food-note-text"><strong>康齡血紅素 EX 是食品，非藥品</strong>，不宣稱診斷或治療任何疾病。若已被診斷為貧血，請優先依醫師指示使用藥物治療；本品可作為日常營養補充的輔助選項。</div>
+    </div>
+  `;
+}
+
+/* ── Build result ── */
+function buildResult(){
+  let total = 0;
+  const vals = [];
+  Object.values(selectedOptions).forEach(({ val, pts }) => {
+    total += pts;
+    if(pts > 0) vals.push(val);
+  });
+
+  const el = document.getElementById('s' + RESULT_SCREEN);
+
+  if(total >= 4){
+    /* ── Hi ── */
+    el.classList.add('result-hi');
+    const cardKeys = vals.filter(v => ING_BY_VAL[v]);
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--magenta)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>非常符合你的狀態</span>
+      </div>
+      <h2 class="result-title">康齡血紅素 EX<br>正好適合你現在的需求</h2>
+      <p class="result-body">根據你的填答，以下是對應你情況的說明——</p>
+
+      <div class="trio-strip">
+        <div class="trio-item">
+          <div class="trio-dot magenta"></div>
+          <div class="trio-name">鐵</div>
+          <div class="trio-role">血紅素<br>構成元素</div>
+        </div>
+        <div class="trio-item">
+          <div class="trio-dot sage"></div>
+          <div class="trio-name">葉酸</div>
+          <div class="trio-role">紅血球<br>正常形成</div>
+        </div>
+        <div class="trio-item">
+          <div class="trio-dot khaki"></div>
+          <div class="trio-name">B12</div>
+          <div class="trio-role">能量代謝<br>神經功能</div>
+        </div>
+      </div>
+
+      <div class="ing-cards">
+        ${cardKeys.slice(0,3).map(k => {
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--evergreen)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${foodNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯了解如何取得</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else if(total >= 1){
+    /* ── Mid ── */
+    el.classList.add('result-mid');
+    const cardKeys = vals.filter(v => ING_BY_VAL[v]);
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些面向值得補充</span>
+      </div>
+      <h2 class="result-title">你有部分需求<br>和這個產品方向相符</h2>
+      <p class="result-body">你的狀況和康齡血紅素 EX 的補充方向有部分重疊。可以從每日一粒開始，作為日常鐵質、葉酸與 B12 的補充來源。</p>
+      <div class="ing-cards">
+        ${cardKeys.length > 0 ? cardKeys.slice(0,2).map(k => {
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--evergreen)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+          </div>`;
+        }).join('') : `<div class="ing-card">
+          <div class="ing-icon cherry">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--evergreen)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+          </div>
+          <div>
+            <div class="ing-name">日常保健補充</div>
+            <div class="ing-headline">打底比補救更輕鬆</div>
+            <div class="ing-desc">在明顯缺乏之前就開始補充，比等到狀況變差才補救容易得多。康齡血紅素 EX 適合作為每日早餐後的固定補充習慣。</div>
+          </div>
+        </div>`}
+      </div>
+      ${foodNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯諮詢看看</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else {
+    /* ── Low ── */
+    el.classList.add('result-low');
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前狀態還不錯</span>
+      </div>
+      <h2 class="result-title">你現在的狀態<br>看起來挺好的</h2>
+      <p class="result-body">從你的填答來看，目前沒有特別明顯的鐵質或相關營養需求。如果未來飲食有調整，或生活狀態有所改變，歡迎再回來評估一次。</p>
+      <div class="ing-card" style="margin-bottom:24px">
+        <div class="ing-icon sage">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--evergreen)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        </div>
+        <div>
+          <div class="ing-name">預防性補充</div>
+          <div class="ing-headline">狀態好的時候，最適合養成習慣</div>
+          <div class="ing-desc">鐵質、葉酸和 B12 需要時間在體內累積。即使目前狀態不錯，若有興趣從日常保健的角度補充，每日一粒是個溫和的開始。</div>
+        </div>
+      </div>
+      ${foodNoteHTML()}
+    `;
+    const bar = document.getElementById('stickyCTA');
+    bar.innerHTML = `
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `;
+    bar.classList.add('show');
+    document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+    return;
+  }
+
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('ctaBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Build ask ── */
+function buildAsk(){
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  el.classList.add('result-ask');
+
+  let bodyText = '你勾選的情況在補充前建議先讓醫師或藥師確認，這樣可以確保補充方式對你是合適的。';
+  if(contraFlags.has('iron-drug')){
+    bodyText = '已在服用醫師開立的鐵劑，若再額外補充含鐵產品，可能造成總鐵攝取過量。建議告訴醫師或藥師目前的補充狀況，讓專業人員幫你確認是否需要調整。';
+  } else if(contraFlags.has('disorder')){
+    bodyText = '地中海型貧血、血色素沉著症或鐵代謝異常者，對鐵的需求和一般人不同，補充前需要醫師評估。請告知醫師你有興趣補充的產品，讓醫師幫你確認適合性。';
+  } else if(contraFlags.has('gi')){
+    bodyText = '黑便、長期腸胃不適或不明原因的明顯疲倦，這些症狀有時候是需要先排除的問題。建議先到門診讓醫師確認，找出原因後再決定補充方向。';
+  } else if(contraFlags.has('allergy')){
+    bodyText = '本產品含大豆卵磷脂與動物來源明膠。對大豆或明膠過敏者不建議使用，可請醫師或藥師協助評估其他鐵質補充選項。';
+  }
+
+  el.innerHTML = `
+    <div class="section-label">建議先諮詢看看</div>
+    <h2 class="result-title">先確認一下<br>會讓補充更放心</h2>
+    <div class="ask-card">
+      <div class="ask-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--evergreen)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <p>${bodyText}</p>
+    </div>
+  `;
+
+  const bar = document.getElementById('stickyCTA');
+  bar.innerHTML = `
+    <button class="btn-primary" id="clinicBtn">向櫃檯詢問，同仁協助確認</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `;
+  bar.classList.add('show');
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('clinicBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Init ── */
+Q_SCREENS.forEach((sid, qi) => buildQuestion(sid, qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
