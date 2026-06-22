@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>順姿S膠囊自我評估</title>
+<title>燃脂排便膠囊自我評估</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
@@ -275,15 +275,15 @@ body{
 
 <!-- s0: Welcome -->
 <div class="screen active" id="s0">
-  <img src="hero.webp" alt="順姿S膠囊" class="hero-img"
+  <img src="hero.webp" alt="燃脂排便膠囊" class="hero-img"
        onerror="this.style.height='80px';this.style.background='var(--amber-pale)';this.removeAttribute('onerror')">
   <div class="hero-content">
     <span class="tag-pill">燃脂 × 排便順暢</span>
     <h1 class="hero-title">吃對了，腸道動起來，<br>代謝才有感</h1>
-    <p class="hero-sub">4 個問題，看看順姿S膠囊是否符合你目前的狀況。大約 1 分鐘。</p>
+    <p class="hero-sub">4 個問題，看看燃脂排便膠囊是否符合你目前的狀況。大約 1 分鐘。</p>
   </div>
   <div class="hero-card">
-    <p>順姿S膠囊以<strong>唐辛子（辣椒素）</strong>支持代謝，搭配<strong>決明子、望江南</strong>溫和促進腸道蠕動，加上<strong>玉米膳食纖維</strong>增加飽腹感，多管齊下的日常腸道與體態管理配方。<strong>晚餐後 1 顆</strong>，每日固定同一時間服用。</p>
+    <p>燃脂排便膠囊以<strong>唐辛子（辣椒素）</strong>支持代謝，搭配<strong>決明子、望江南</strong>溫和促進腸道蠕動，加上<strong>玉米膳食纖維</strong>增加飽腹感，多管齊下的日常腸道與體態管理配方。<strong>晚餐後 1 顆</strong>，每日固定同一時間服用。</p>
     <div class="usage-note">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
       <p class="usage-note-text">服用後若排便次數明顯增加，建議改為隔日服用，讓腸道逐步適應</p>
@@ -392,7 +392,7 @@ const ING_BY_VAL = {
   'irregular-bowel': {
     icon:'teal', name:'膳食纖維（玉米來源）',
     headline:'每天補充纖維，讓腸道蠕動更有節奏',
-    desc:'可溶性膳食纖維能吸水膨脹，幫助糞便成形，並促進腸道蠕動。世界衛生組織建議每日攝取 25–38g 膳食纖維，但台灣外食族普遍不足。順姿S的玉米膳食纖維幫助從這個缺口補起。'
+    desc:'可溶性膳食纖維能吸水膨脹，幫助糞便成形，並促進腸道蠕動。世界衛生組織建議每日攝取 25–38g 膳食纖維，但台灣外食族普遍不足。這款膠囊的玉米膳食纖維幫助從這個缺口補起。'
   },
   'belly-fat': {
     icon:'red', name:'唐辛子（辣椒素）',
@@ -422,7 +422,7 @@ const ING_BY_VAL = {
   'irregular-life': {
     icon:'blue', name:'腸道規律性',
     headline:'固定時間服用，幫助建立腸道的節奏感',
-    desc:'腸道有自己的生理時鐘，作息不規律時最先受影響的往往是排便節奏。每天晚餐後固定服用順姿S，配合溫水，是幫助腸道建立日常節奏感的一個簡單方式。'
+    desc:'腸道有自己的生理時鐘，作息不規律時最先受影響的往往是排便節奏。每天晚餐後固定服用，配合溫水，是幫助腸道建立日常節奏感的一個簡單方式。'
   }
 };
 
@@ -507,7 +507,7 @@ function foodNoteHTML(){
   return `
     <div class="food-note">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-      <div class="food-note-text"><strong>順姿S膠囊是食品，非藥品</strong>，不宣稱治療便秘或任何疾病。若有長期慢性便秘或排便帶血，請優先就醫檢查。</div>
+      <div class="food-note-text"><strong>燃脂排便膠囊是食品，非藥品</strong>，不宣稱治療便秘或任何疾病。若有長期慢性便秘或排便帶血，請優先就醫檢查。</div>
     </div>
     <div class="diarrhea-tip">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--navy)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
@@ -531,7 +531,7 @@ function buildResult(){
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
         <span>高度符合你的需求</span>
       </div>
-      <h2 class="result-title">順姿S膠囊<br>很符合你目前的狀況</h2>
+      <h2 class="result-title">燃脂排便膠囊<br>很符合你目前的狀況</h2>
       <p class="result-body">根據你的填答，以下是和你狀況最相關的成分說明——</p>
       <div class="ing-cards">
         ${cardKeys.map(k=>{
@@ -557,8 +557,8 @@ function buildResult(){
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
         <span>有些面向很符合</span>
       </div>
-      <h2 class="result-title">你有一些狀況<br>和順姿S的方向相符</h2>
-      <p class="result-body">你的部分情況和順姿S膠囊的保養方向有重疊。如果對腸道順暢或代謝維持有興趣，歡迎向櫃檯進一步詢問。</p>
+      <h2 class="result-title">你有一些狀況<br>和這款膠囊的方向相符</h2>
+      <p class="result-body">你的部分情況和燃脂排便膠囊的保養方向有重疊。如果對腸道順暢或代謝維持有興趣，歡迎向櫃檯進一步詢問。</p>
       <div class="ing-cards">
         ${cardKeys.length > 0 ? cardKeys.map(k=>{
           const d = ING_BY_VAL[k];
@@ -590,7 +590,7 @@ function buildResult(){
         <span>目前腸道狀態不錯</span>
       </div>
       <h2 class="result-title">你現在的腸道狀態<br>看起來還不錯</h2>
-      <p class="result-body">從你的填答來看，目前沒有特別明顯的排便或代謝困擾。如果想透過預防性保養讓好狀態持續，順姿S也可以作為每天的輔助選項。</p>
+      <p class="result-body">從你的填答來看，目前沒有特別明顯的排便或代謝困擾。如果想透過預防性保養讓好狀態持續，這款膠囊也可以作為每天的輔助選項。</p>
       <div class="ing-card" style="margin-bottom:24px">
         <div class="ing-icon amber">${iconSVG('var(--amber)')}</div>
         <div>
@@ -624,7 +624,7 @@ function buildAsk(){
   } else if(contraFlags.has('pregnant')){
     bodyText = '懷孕或哺乳中，腸道敏感性較高，任何草本通便成分都需謹慎評估。建議先諮詢婦產科醫師，確認後再決定。';
   } else if(contraFlags.has('capsaicin-allergy')){
-    bodyText = '順姿S含唐辛子（辣椒素），腸胃對辣椒素特別敏感者可能不耐受。建議先向同仁或醫師說明你的體質，再確認是否適合。';
+    bodyText = '這款膠囊含唐辛子（辣椒素），腸胃對辣椒素特別敏感者可能不耐受。建議先向同仁或醫師說明你的體質，再確認是否適合。';
   }
 
   el.innerHTML = `
