@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>睡蓮酵素飲自我評估</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&family=Noto+Sans+TC:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+<style>
+:root {
+  /* ── Coolors palette ── */
+  --grape:      #4E4187;
+  --grape-pale: #EDE8FF;
+  --azure:      #3083DC;
+  --azure-pale: #DFF0FF;
+  --yellow:     #F8FFE5;
+  --green:      #7DDE92;
+  --green-pale: #E0FBEA;
+  --teal:       #2EBFA5;
+  --teal-pale:  #DFF8F4;
+
+  /* ── Text ── */
+  --ink:     #1A1530;
+  --ink-mid: #302850;
+  --muted:   #6A5E8A;
+
+  --white:   #FEFEFF;
+  --bg:      #F5F0FF;
+
+  /* ── CTA: grape ── */
+  --cta:    #4E4187;
+  --cta-sh: rgba(40,20,100,.3);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Noto Sans TC',sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+  min-height:100dvh;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+
+/* ── Screens ── */
+.screen{
+  display:none;min-height:100dvh;
+  padding-bottom:calc(100px + env(safe-area-inset-bottom));
+  animation:fadeIn .35s ease;
+}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ── Progress ── */
+.progress-wrap{
+  position:fixed;top:0;left:0;right:0;z-index:40;
+  height:5px;background:rgba(78,65,135,.18);
+}
+.progress-bar{
+  height:100%;background:var(--grape);
+  transition:width .4s ease;border-radius:0 4px 4px 0;
+}
+
+/* ── Sticky CTA ── */
+#stickyCTA{
+  position:fixed;bottom:0;left:0;right:0;z-index:40;
+  padding:12px 20px calc(12px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--bg) 80%, transparent);
+  display:flex;flex-direction:column;gap:8px;
+  transform:translateY(100%);transition:transform .35s ease;
+  pointer-events:none;
+}
+#stickyCTA.show{transform:none;pointer-events:auto}
+
+/* ── Buttons ── */
+.btn-primary{
+  display:block;width:100%;
+  background:var(--cta);color:#fff;
+  font-family:'Noto Sans TC',sans-serif;font-size:16px;font-weight:600;
+  padding:16px 24px;border:none;border-radius:20px;
+  cursor:pointer;text-align:center;
+  box-shadow:0 6px 0 var(--cta-sh),0 10px 20px rgba(78,65,135,.18);
+  transition:transform .12s ease,box-shadow .12s ease;
+  touch-action:manipulation;
+}
+.btn-primary:active{transform:translateY(3px);box-shadow:0 3px 0 var(--cta-sh),0 5px 12px rgba(78,65,135,.12)}
+.btn-ghost{
+  display:block;width:100%;
+  background:transparent;color:var(--ink);
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;font-weight:500;
+  padding:12px 24px;border:2px solid rgba(26,21,48,.22);border-radius:20px;
+  cursor:pointer;text-align:center;
+  transition:background .15s;touch-action:manipulation;opacity:.72;
+}
+.btn-ghost:active{background:rgba(26,21,48,.05)}
+
+/* ── Screen 0: Welcome ── */
+#s0.active{
+  background:linear-gradient(160deg, var(--grape-pale) 0%, var(--bg) 55%, var(--yellow) 100%);
+  display:flex;flex-direction:column;
+}
+.hero-img{
+  width:100%;height:240px;object-fit:cover;object-position:center top;
+  border-radius:0 0 32px 32px;
+  box-shadow:0 8px 24px rgba(26,21,48,.12);
+}
+.hero-content{padding:28px 24px 20px}
+.tag-pill{
+  display:inline-block;
+  background:var(--grape);color:#fff;
+  font-size:12px;font-weight:600;letter-spacing:.08em;
+  padding:4px 12px;border-radius:20px;margin-bottom:16px;
+  box-shadow:0 3px 0 rgba(40,20,100,.28);
+}
+.hero-title{
+  font-family:'Noto Serif TC',serif;font-size:26px;font-weight:700;
+  line-height:1.45;color:var(--ink);margin-bottom:12px;
+}
+.hero-sub{
+  font-size:15px;line-height:1.9;color:var(--ink-mid);opacity:.85;
+  margin-bottom:24px;
+}
+.hero-card{
+  background:var(--white);border-radius:24px;padding:18px 20px;
+  box-shadow:0 6px 0 rgba(26,21,48,.07),0 10px 24px rgba(26,21,48,.05);
+  margin:0 24px 28px;
+}
+.hero-card p{font-size:14px;line-height:1.9;color:var(--ink-mid)}
+.hero-card strong{color:var(--grape);font-weight:600}
+
+/* ── Screen 1: Contraindication ── */
+#s1{padding:32px 24px 20px}
+.section-label{
+  font-size:12px;font-weight:600;letter-spacing:.1em;color:var(--muted);
+  text-transform:uppercase;margin-bottom:8px;
+}
+.screen-title{
+  font-family:'Noto Serif TC',serif;font-size:22px;font-weight:700;
+  line-height:1.5;margin-bottom:8px;
+}
+.screen-sub{font-size:14px;line-height:1.8;color:var(--ink-mid);opacity:.75;margin-bottom:28px}
+
+.check-group{display:flex;flex-direction:column;gap:12px;margin-bottom:32px}
+.check-card{
+  display:flex;align-items:center;gap:14px;
+  background:var(--white);border-radius:20px;padding:18px 16px;
+  box-shadow:0 4px 0 rgba(26,21,48,.07),0 8px 16px rgba(26,21,48,.04);
+  cursor:pointer;transition:box-shadow .15s,transform .12s;
+  border:2px solid transparent;touch-action:manipulation;
+}
+.check-card.selected{
+  border-color:var(--grape);
+  box-shadow:0 4px 0 rgba(78,65,135,.25),0 8px 16px rgba(78,65,135,.1);
+}
+.check-card:active{transform:scale(.98)}
+.check-box{
+  width:22px;height:22px;border-radius:6px;border:2px solid #C8C0F0;
+  flex-shrink:0;transition:background .15s,border-color .15s;
+  display:flex;align-items:center;justify-content:center;
+}
+.check-card.selected .check-box{background:var(--cta);border-color:var(--cta)}
+.check-tick{display:none}
+.check-card.selected .check-tick{display:block}
+.check-label{font-size:15px;line-height:1.6;color:var(--ink)}
+
+/* ── Quiz questions ── */
+.quiz-screen{padding:28px 24px 20px}
+.q-progress{font-size:13px;font-weight:600;color:var(--muted);margin-bottom:6px}
+.q-text{
+  font-family:'Noto Serif TC',serif;font-size:20px;font-weight:600;
+  line-height:1.6;margin-bottom:8px;
+}
+.q-hint{font-size:13px;line-height:1.7;color:var(--ink-mid);opacity:.7;margin-bottom:28px}
+
+.option-group{display:flex;flex-direction:column;gap:10px}
+.option-btn{
+  position:relative;
+  background:var(--white);border:2px solid transparent;
+  border-radius:20px;padding:18px 20px;
+  font-family:'Noto Sans TC',sans-serif;font-size:15px;line-height:1.5;
+  color:var(--ink);cursor:pointer;text-align:left;
+  box-shadow:0 4px 0 rgba(26,21,48,.07),0 8px 16px rgba(26,21,48,.04);
+  transition:border-color .12s,box-shadow .12s,transform .1s;
+  touch-action:manipulation;display:flex;align-items:center;gap:12px;width:100%;
+}
+.option-btn:active{transform:scale(.98)}
+.opt-dot{
+  flex-shrink:0;width:7px;height:7px;
+  border-radius:50%;background:rgba(0,0,0,.2);transition:background .12s;
+}
+.option-btn.selected .opt-dot{background:var(--grape)}
+.option-btn.selected::after{
+  content:'';position:absolute;right:16px;top:50%;
+  transform:translateY(-50%);width:8px;height:8px;
+  background:var(--grape);border-radius:50%;
+  box-shadow:0 0 0 3px rgba(78,65,135,.2);
+}
+.option-btn.selected{border-color:var(--grape)}
+
+/* ── Result screen ── */
+#s6{padding:28px 24px calc(220px + env(safe-area-inset-bottom))}
+#s6.result-hi{
+  background:linear-gradient(160deg, var(--grape-pale) 0%, var(--green-pale) 100%);
+}
+#s6.result-mid{
+  background:linear-gradient(160deg, var(--azure-pale) 0%, var(--yellow) 100%);
+}
+#s6.result-low{
+  background:linear-gradient(160deg, var(--yellow) 0%, var(--teal-pale) 100%);
+}
+#s6.result-ask{
+  background:linear-gradient(160deg, var(--grape-pale) 0%, var(--yellow) 100%);
+}
+
+.result-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--white);border-radius:16px;
+  padding:10px 16px;margin-bottom:20px;
+  box-shadow:0 4px 0 rgba(26,21,48,.07),0 8px 16px rgba(26,21,48,.04);
+}
+.result-badge span{font-size:14px;font-weight:600;color:var(--ink)}
+.result-title{
+  font-family:'Noto Serif TC',serif;font-size:24px;font-weight:700;
+  line-height:1.5;margin-bottom:12px;
+}
+.result-body{font-size:15px;line-height:1.9;color:var(--ink-mid);margin-bottom:24px}
+
+/* ── Herb trio strip ── */
+.herb-strip{
+  background:var(--grape);border-radius:24px;padding:18px 16px;
+  margin-bottom:24px;
+  box-shadow:0 6px 0 rgba(40,20,100,.28),0 10px 20px rgba(78,65,135,.2);
+  display:flex;gap:0;
+}
+.herb-item{
+  flex:1;min-width:0;text-align:center;
+  padding:0 6px;
+  border-right:1px solid rgba(255,255,255,.2);
+}
+.herb-item:last-child{border-right:none}
+.herb-name{font-size:14px;font-weight:700;color:#fff;margin-bottom:3px}
+.herb-role{font-size:11px;color:rgba(255,255,255,.7);line-height:1.4;word-break:keep-all}
+
+/* ── Ing cards ── */
+.ing-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.ing-card{
+  background:var(--white);border-radius:24px;padding:20px 18px;
+  box-shadow:0 6px 0 rgba(26,21,48,.07),0 10px 20px rgba(26,21,48,.04);
+  display:flex;gap:14px;align-items:flex-start;
+}
+.ing-icon{
+  width:44px;height:44px;border-radius:14px;
+  flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.ing-icon.grape{background:var(--grape-pale)}
+.ing-icon.teal{background:var(--teal-pale)}
+.ing-icon.green{background:var(--green-pale)}
+.ing-icon.azure{background:var(--azure-pale)}
+.ing-icon.yellow{background:var(--yellow);border:1.5px solid #D8E8A0}
+.ing-name{font-size:14px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.ing-headline{font-size:16px;font-weight:700;color:var(--ink);margin-bottom:6px;line-height:1.4}
+.ing-desc{font-size:13px;line-height:1.8;color:var(--ink-mid);opacity:.85}
+
+/* ── Food note ── */
+.food-note{
+  background:var(--grape-pale);border-radius:20px;padding:14px 18px;
+  margin-bottom:24px;
+  box-shadow:0 4px 0 rgba(26,21,48,.05);
+  display:flex;gap:12px;align-items:flex-start;
+}
+.food-note-text{font-size:13px;line-height:1.8;color:var(--ink);font-weight:500}
+.food-note-text strong{font-weight:700;color:var(--grape)}
+
+/* ── Ask ── */
+.ask-card{
+  background:var(--white);border-radius:24px;padding:24px 20px;
+  box-shadow:0 6px 0 rgba(26,21,48,.07),0 10px 20px rgba(26,21,48,.04);
+  margin-top:16px;
+}
+.ask-icon{
+  width:48px;height:48px;border-radius:16px;
+  background:var(--grape-pale);margin-bottom:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.ask-card p{font-size:15px;line-height:1.9;color:var(--ink-mid)}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<div class="progress-wrap"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+
+<!-- Screen 0: Welcome -->
+<div class="screen active" id="s0">
+  <img src="hero.webp" alt="睡蓮酵素飲" class="hero-img"
+       onerror="this.style.height='80px';this.style.background='var(--grape-pale)';this.removeAttribute('onerror')">
+  <div class="hero-content">
+    <span class="tag-pill">睡前草本酵素飲</span>
+    <h1 class="hero-title">睡前 30 分鐘，<br>給身體一個收工信號</h1>
+    <p class="hero-sub">4 個問題，看看睡蓮酵素飲是否適合你的晚間保養需求。大約 1 分鐘。</p>
+  </div>
+  <div class="hero-card">
+    <p>睡蓮酵素飲以<strong>酸棗仁、蓮子、桂圓</strong>為核心草本，搭配甘草調和、肉桂溫潤，加入蔬果酵母粉打造植物發酵飲。口味酸甜溫潤，<strong>60ml 小瓶即飲</strong>，全素食品，每晚睡前一瓶，簡單建立晚間保養儀式。</p>
+  </div>
+</div>
+
+<!-- Screen 1: Contraindication -->
+<div class="screen" id="s1">
+  <div class="section-label">開始之前</div>
+  <h2 class="screen-title">有以下情況嗎？</h2>
+  <p class="screen-sub">這些狀況飲用前建議先讓醫師確認。勾選符合的，或直接點「沒有，繼續」。</p>
+  <div class="check-group">
+    <label class="check-card" data-val="sleep-drug">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">目前正在服用安眠藥、抗焦慮藥或精神科相關藥物</span>
+    </label>
+    <label class="check-card" data-val="pregnant">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">懷孕或哺乳中</span>
+    </label>
+    <label class="check-card" data-val="chronic">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">有高血壓、心臟病、腎臟病，或正在服用降壓、利尿或抗凝血藥（配方含甘草）</span>
+    </label>
+    <label class="check-card" data-val="allergy">
+      <div class="check-box">
+        <svg class="check-tick" width="13" height="10" viewBox="0 0 13 10" fill="none"><path d="M1 5l4 4 7-8" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <span class="check-label">對大豆、小麥或酵母過敏；或有胃食道逆流、胃酸敏感（含青梅、鳳梨等酸性成分）</span>
+    </label>
+  </div>
+</div>
+
+<!-- Screens 2–5: Questions -->
+<div class="screen quiz-screen" id="s2"></div>
+<div class="screen quiz-screen" id="s3"></div>
+<div class="screen quiz-screen" id="s4"></div>
+<div class="screen quiz-screen" id="s5"></div>
+
+<!-- Screen 6: Result -->
+<div class="screen" id="s6"></div>
+
+<div id="stickyCTA"></div>
+
+<script>
+const TOTAL_SCREENS = 7;
+const RESULT_SCREEN = 6;
+let currentScreen = 0;
+let contraFlags = new Set();
+let selectedOptions = {};
+
+const QUESTIONS = [
+  {
+    q: '你最近的睡眠狀況，比較像哪一種？',
+    hint: '選一個最符合的就好',
+    options: [
+      { val:'cant-sleep', pts:3, label:'很難入睡，腦袋停不下來，躺很久才能睡著' },
+      { val:'light-sleep', pts:2, label:'睡著了但容易醒、睡很淺，早上起來還是累' },
+      { val:'unstable',   pts:1, label:'睡眠時間夠，但品質有時不穩定，偶爾狀況不好' },
+      { val:'ok',         pts:0, label:'睡眠還不錯，主要是想用保養的方式維持' },
+    ]
+  },
+  {
+    q: '準備睡覺的時候，你通常是什麼狀態？',
+    hint: '符合一個就算',
+    options: [
+      { val:'racing-mind', pts:2, label:'腦袋還在轉，一直在想事情、計劃或各種雜念' },
+      { val:'tense',       pts:1, label:'身體感覺緊繃或有壓力，難以放鬆下來' },
+      { val:'calm',        pts:0, label:'還算平靜，大多時候能自然放鬆' },
+    ]
+  },
+  {
+    q: '你的腸胃狀況和飲食習慣，哪個比較符合？',
+    hint: '腸道與睡眠狀態有雙向關聯，所以這題也很重要',
+    options: [
+      { val:'gut-issues',  pts:2, label:'偶爾肚子脹氣、腸胃不舒服，或排便不太規律' },
+      { val:'poor-diet',   pts:1, label:'腸胃還好，但飲食比較不均衡，外食多、蔬果少' },
+      { val:'gut-ok',      pts:0, label:'腸胃一直很正常，飲食也算規律均衡' },
+    ]
+  },
+  {
+    q: '以下哪個情況最像你的生活狀態？',
+    hint: '選一個最接近的就好',
+    options: [
+      { val:'stressed',  pts:2, label:'工作或生活壓力大，晚上需要很長時間才能「切換」下來' },
+      { val:'irregular', pts:1, label:'作息偏不規律，常太晚睡或睡眠時間不固定' },
+      { val:'routine',   pts:0, label:'作息規律，想透過晚間保養讓睡眠品質更穩' },
+    ]
+  }
+];
+
+const ING_BY_VAL = {
+  'cant-sleep': {
+    icon:'grape',
+    name:'酸棗仁',
+    headline:'睡前草本的核心，養心安神配伍主軸',
+    desc:'酸棗仁在中醫傳統配方中屬「養心安神」類草本，是睡前調養配方的常見主角。本品以酸棗仁為核心，搭配蓮子與桂圓，形成中醫「心脾同養」的睡前草本配伍。'
+  },
+  'light-sleep': {
+    icon:'grape',
+    name:'蓮子 + 桂圓',
+    headline:'心脾同養，幫助建立更深沉的放鬆感',
+    desc:'蓮子與桂圓在傳統食養中常搭配使用，蓮子偏養心安神健脾，桂圓偏養心脾補益，兩者一起形成溫潤安定的睡前草本基調，搭配酸棗仁共同作用。'
+  },
+  'racing-mind': {
+    icon:'teal',
+    name:'肉桂 + 甘草',
+    headline:'溫潤收攝，讓思緒跟著慢下來',
+    desc:'肉桂在中醫配伍中有「引火歸元」的理論概念，用於溫潤調和、讓向上的熱氣收回；甘草調和諸味、讓配方更為順和。兩者在睡前草本中發揮溫潤安定的配伍作用。'
+  },
+  'tense': {
+    icon:'teal',
+    name:'腸腦軸概念',
+    headline:'腸道與大腦會雙向溝通，腸道放鬆了，睡眠基礎才更穩',
+    desc:'現代研究指出，腸道菌相與大腦之間存在雙向溝通路徑，壓力反應與腸道健康會相互影響。睡蓮酵素飲的蔬果酵母粉與植物發酵素材，從腸道保養的角度支持晚間的放鬆基礎。'
+  },
+  'gut-issues': {
+    icon:'green',
+    name:'蔬果酵母粉',
+    headline:'植物發酵飲，從腸道出發的晚間保養',
+    desc:'蔬果酵母粉搭配鳳梨、青梅、桑葚、枸杞等蔬果素材，形成植物發酵飲的概念，支撐腸道日常保養的形象。每晚睡前一瓶，建立晚間的腸道保養習慣。'
+  },
+  'poor-diet': {
+    icon:'green',
+    name:'多元植物素材',
+    headline:'鳳梨、青梅、桑葚、枸杞，補足外食族的蔬果缺口',
+    desc:'外食族的飲食常缺乏多元蔬果與發酵食品。睡蓮酵素飲集合多種植物素材，在每天睡前做一次蔬果草本補充，比早上還有記憶點。'
+  },
+  'stressed': {
+    icon:'azure',
+    name:'睡前儀式感',
+    headline:'固定的睡前儀式，讓大腦開始認識「要睡了」',
+    desc:'睡眠研究指出，固定的睡前行為有助於幫助大腦進入準備睡眠的狀態。每晚睡前 30 分鐘喝一瓶睡蓮酵素飲，搭配調暗燈光或放下手機，形成穩定的入眠信號。'
+  },
+  'irregular': {
+    icon:'azure',
+    name:'建立晚間保養節奏',
+    headline:'作息不規律，更需要一個固定的睡前錨點',
+    desc:'作息不穩定時，身體很難判斷什麼時候「該睡了」。在睡前設定一個固定的行為儀式（如飲用睡蓮酵素飲），有助於為不規律的作息建立一個相對穩定的夜間錨點。'
+  }
+};
+
+function updateProgress(){
+  const pct = Math.round((currentScreen / (TOTAL_SCREENS - 1)) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+}
+
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('s' + idx).classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  currentScreen = idx;
+  updateProgress();
+}
+
+function showCTA(html){ const b=document.getElementById('stickyCTA'); b.innerHTML=html; b.classList.add('show'); }
+function hideCTA(){ document.getElementById('stickyCTA').classList.remove('show'); }
+
+/* ── S0 ── */
+function initS0(){
+  showCTA(`<button class="btn-primary" id="startBtn">開始自我評估</button>`);
+  document.getElementById('startBtn').addEventListener('click', () => { hideCTA(); showScreen(1); initS1(); });
+}
+
+/* ── S1 ── */
+function initS1(){
+  document.querySelectorAll('#s1 .check-card').forEach(card => {
+    card.addEventListener('click', () => {
+      card.classList.toggle('selected');
+      const v = card.dataset.val;
+      if(card.classList.contains('selected')) contraFlags.add(v);
+      else contraFlags.delete(v);
+    });
+  });
+  showCTA(`
+    <button class="btn-primary" id="contraNextBtn">沒有，繼續</button>
+    <button class="btn-ghost" id="contraAskBtn">有以上情況，建議先諮詢</button>
+  `);
+  document.getElementById('contraNextBtn').addEventListener('click', () => {
+    if(contraFlags.size > 0){ hideCTA(); showScreen(RESULT_SCREEN); buildAsk(); return; }
+    hideCTA(); showScreen(2);
+  });
+  document.getElementById('contraAskBtn').addEventListener('click', () => {
+    if(contraFlags.size === 0) contraFlags.add('general');
+    hideCTA(); showScreen(RESULT_SCREEN); buildAsk();
+  });
+}
+
+/* ── Build questions ── */
+const Q_SCREENS = [2, 3, 4, 5];
+function buildQuestion(screenId, qIdx){
+  const q = QUESTIONS[qIdx];
+  const el = document.getElementById('s' + screenId);
+  el.innerHTML = `
+    <div class="q-progress">第 ${qIdx + 1} 題，共 ${QUESTIONS.length} 題</div>
+    <h2 class="q-text">${q.q}</h2>
+    <p class="q-hint">${q.hint}</p>
+    <div class="option-group">
+      ${q.options.map(o => `
+        <button class="option-btn" data-val="${o.val}" data-pts="${o.pts}">
+          <span class="opt-dot" aria-hidden="true"></span>${o.label}
+        </button>
+      `).join('')}
+    </div>
+  `;
+  el.querySelectorAll('.option-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedOptions[screenId] = { val: btn.dataset.val, pts: parseInt(btn.dataset.pts) };
+      const nextIdx = qIdx + 1;
+      setTimeout(() => {
+        hideCTA();
+        if(nextIdx < Q_SCREENS.length){
+          showScreen(Q_SCREENS[nextIdx]);
+        } else {
+          showScreen(RESULT_SCREEN);
+          buildResult();
+        }
+      }, 300);
+    });
+  });
+}
+
+/* ── Food note ── */
+function foodNoteHTML(){
+  return `
+    <div class="food-note">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--grape)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;margin-top:1px"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <div class="food-note-text"><strong>睡蓮酵素飲是食品，非藥品</strong>，不宣稱治療失眠或任何睡眠疾病。如有嚴重失眠、焦慮或正在服用安眠藥，請優先諮詢醫師。本品可作為健康成人的晚間草本保養選項。</div>
+    </div>
+  `;
+}
+
+/* ── SVG icon ── */
+function iconSVG(color){
+  return `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${color}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2C8 2 5 5 5 9c0 5 7 13 7 13s7-8 7-13c0-4-3-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>`;
+}
+
+/* ── Build result ── */
+function buildResult(){
+  let total = 0;
+  const vals = [];
+  Object.values(selectedOptions).forEach(({ val, pts }) => {
+    total += pts;
+    if(pts > 0) vals.push(val);
+  });
+
+  const el = document.getElementById('s' + RESULT_SCREEN);
+
+  if(total >= 5){
+    el.classList.add('result-hi');
+    const cardKeys = vals.filter(v => ING_BY_VAL[v]).slice(0, 3);
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--grape)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+        <span>非常符合你的需求</span>
+      </div>
+      <h2 class="result-title">睡蓮酵素飲<br>很適合你現在的狀態</h2>
+      <p class="result-body">根據你的填答，以下是對應你情況的說明——</p>
+
+      <div class="herb-strip">
+        <div class="herb-item">
+          <div class="herb-name">酸棗仁</div>
+          <div class="herb-role">養心安神<br>主軸草本</div>
+        </div>
+        <div class="herb-item">
+          <div class="herb-name">蓮子桂圓</div>
+          <div class="herb-role">心脾同養<br>溫潤安定</div>
+        </div>
+        <div class="herb-item">
+          <div class="herb-name">肉桂甘草</div>
+          <div class="herb-role">溫潤調和<br>引火歸元</div>
+        </div>
+      </div>
+
+      <div class="ing-cards">
+        ${cardKeys.map(k => {
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">${iconSVG('var(--grape)')}</div>
+            <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+          </div>`;
+        }).join('')}
+      </div>
+      ${foodNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯了解如何取得</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else if(total >= 2){
+    el.classList.add('result-mid');
+    const cardKeys = vals.filter(v => ING_BY_VAL[v]).slice(0, 2);
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>有些面向很適合</span>
+      </div>
+      <h2 class="result-title">你的部分狀況<br>和睡蓮酵素飲的方向相符</h2>
+      <p class="result-body">你的睡眠或生活狀態有一些部分，和睡蓮酵素飲的草本保養方向有所重疊。睡前建立固定的保養儀式，往往比睡不著才想辦法更有效。</p>
+      <div class="ing-cards">
+        ${cardKeys.length > 0 ? cardKeys.map(k => {
+          const d = ING_BY_VAL[k];
+          return `<div class="ing-card">
+            <div class="ing-icon ${d.icon}">${iconSVG('var(--grape)')}</div>
+            <div><div class="ing-name">${d.name}</div><div class="ing-headline">${d.headline}</div><div class="ing-desc">${d.desc}</div></div>
+          </div>`;
+        }).join('') : `<div class="ing-card">
+          <div class="ing-icon teal">${iconSVG('var(--teal)')}</div>
+          <div>
+            <div class="ing-name">睡前儀式</div>
+            <div class="ing-headline">穩定的睡前習慣，讓身體學會「該睡了」</div>
+            <div class="ing-desc">每晚睡前 30 分鐘固定一個行為，大腦會開始將這個動作與「準備入睡」連結。睡蓮酵素飲酸甜溫潤、小瓶低負擔，很適合作為每天的睡前信號。</div>
+          </div>
+        </div>`}
+      </div>
+      ${foodNoteHTML()}
+    `;
+    showCTA(`
+      <button class="btn-primary" id="ctaBtn">向櫃檯詢問看看</button>
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `);
+
+  } else {
+    el.classList.add('result-low');
+    el.innerHTML = `
+      <div class="result-badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--green)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>
+        <span>目前睡眠狀態不錯</span>
+      </div>
+      <h2 class="result-title">你現在的狀態<br>看起來挺好的</h2>
+      <p class="result-body">從你的填答來看，目前沒有特別困擾的睡眠問題。如果想透過晚間草本保養讓好狀態繼續維持，睡蓮酵素飲也可以作為日常保養的選項。</p>
+      <div class="ing-card" style="margin-bottom:24px">
+        <div class="ing-icon yellow">${iconSVG('var(--grape)')}</div>
+        <div>
+          <div class="ing-name">預防性晚間保養</div>
+          <div class="ing-headline">趁狀態好的時候，最適合養成習慣</div>
+          <div class="ing-desc">睡蓮酵素飲每瓶 36.8 大卡、脂肪 0 公克，酸甜溫潤好入口。全素食品，每晚睡前 30 分鐘一瓶，是建立晚間草本保養習慣一個輕鬆的起點。</div>
+        </div>
+      </div>
+      ${foodNoteHTML()}
+    `;
+    const bar = document.getElementById('stickyCTA');
+    bar.innerHTML = `
+      <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+    `;
+    bar.classList.add('show');
+    document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+    return;
+  }
+
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('ctaBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Build ask ── */
+function buildAsk(){
+  const el = document.getElementById('s' + RESULT_SCREEN);
+  el.classList.add('result-ask');
+
+  let bodyText = '你勾選的狀況在飲用前建議先讓醫師確認，確保這個產品對你是合適的。向同仁說明你的狀況，同仁可以幫你確認或協助諮詢。';
+  if(contraFlags.has('sleep-drug')){
+    bodyText = '正在服用安眠藥或抗焦慮藥的情況下，加上草本飲品可能有交互作用的疑慮。建議告訴醫師你有興趣嘗試的產品，讓醫師幫你確認是否合適、以及需要注意什麼。';
+  } else if(contraFlags.has('pregnant')){
+    bodyText = '懷孕或哺乳中，任何飲品和草本成分都需要謹慎評估。建議先讓婦產科醫師確認後再決定，不需要自己判斷。';
+  } else if(contraFlags.has('chronic')){
+    bodyText = '高血壓或心腎相關慢性病患者，配方中的甘草成分可能影響血壓與電解質。建議先告訴主治醫師你有意嘗試的產品，讓醫師確認是否合適。';
+  } else if(contraFlags.has('allergy')){
+    bodyText = '本品含大豆卵磷脂、小麥胚芽與酵母成分，且含青梅、鳳梨等酸性素材。過敏或胃酸敏感者飲用前建議先諮詢，確認成分是否適合你的體質。';
+  }
+
+  el.innerHTML = `
+    <div class="section-label">建議先確認看看</div>
+    <h2 class="result-title">先確認一下<br>讓保養更放心</h2>
+    <div class="ask-card">
+      <div class="ask-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--grape)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <p>${bodyText}</p>
+    </div>
+  `;
+
+  const bar = document.getElementById('stickyCTA');
+  bar.innerHTML = `
+    <button class="btn-primary" id="clinicBtn">向櫃檯詢問，同仁協助確認</button>
+    <button class="btn-ghost" id="backBtn">回到產品目錄</button>
+  `;
+  bar.classList.add('show');
+  document.getElementById('backBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+  document.getElementById('clinicBtn').addEventListener('click', () => { window.location.href = '../index.html'; });
+}
+
+/* ── Init ── */
+Q_SCREENS.forEach((sid, qi) => buildQuestion(sid, qi));
+initS0();
+updateProgress();
+</script>
+</body>
+</html>
